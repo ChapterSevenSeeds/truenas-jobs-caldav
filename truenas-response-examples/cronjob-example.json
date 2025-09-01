@@ -1,0 +1,82 @@
+[
+    {
+        "enabled": true,
+        "stderr": false,
+        "stdout": false,
+        "schedule": {
+            "minute": "0",
+            "hour": "3",
+            "dom": "16",
+            "month": "*",
+            "dow": "*"
+        },
+        "command": "sudo shutdown -r now",
+        "description": "Monthly reboot",
+        "user": "root",
+        "id": 3
+    },
+    {
+        "enabled": true,
+        "stderr": false,
+        "stdout": true,
+        "schedule": {
+            "minute": "0",
+            "hour": "6",
+            "dom": "*",
+            "month": "*",
+            "dow": "sun"
+        },
+        "command": "bash -c \"cd /mnt/Stuff/Tyson/Monitoring && ./multi_report.sh\"",
+        "description": "Weekly disk report",
+        "user": "root",
+        "id": 5
+    },
+    {
+        "enabled": true,
+        "stderr": false,
+        "stdout": true,
+        "schedule": {
+            "minute": "0,30",
+            "hour": "*",
+            "dom": "*",
+            "month": "*",
+            "dow": "*"
+        },
+        "command": "bash -c \"cd /mnt/Stuff/Tyson/Monitoring && ./temp_mon.sh\"",
+        "description": "Temp mon",
+        "user": "root",
+        "id": 7
+    },
+    {
+        "enabled": true,
+        "stderr": false,
+        "stdout": true,
+        "schedule": {
+            "minute": "0",
+            "hour": "0",
+            "dom": "*",
+            "month": "*",
+            "dow": "sun"
+        },
+        "command": "/mnt/Stuff/Tyson/nextcloud_db_backup.sh",
+        "description": "Nextcloud DB backup",
+        "user": "root",
+        "id": 10
+    },
+    {
+        "enabled": true,
+        "stderr": false,
+        "stdout": true,
+        "schedule": {
+            "minute": "*/10",
+            "hour": "*",
+            "dom": "*",
+            "month": "*",
+            "dow": "*"
+        },
+        "command": "/mnt/Stuff/Tyson/update-wopi-addresses.sh",
+        "description": "WOPI",
+        "user": "root",
+        "id": 15
+    }
+]

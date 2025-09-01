@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Main",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "env": {
+                "CALENDAR_ID": "this-should-be-secret",
+                "CALDAV_HOST": "localhost:5232",
+                "CALDAV_USERNAME": "root",
+                "CALDAV_PASSWORD": "changeme",
+                "TRUENAS_HOST": "192.168.254.10",
+                "TRUENAS_HOST_VERIFY_SSL": "false",
+                "TRUENAS_API_KEY": "what",
+                "FAILURE_BACKOFF_TIME": "30 seconds",
+                "SYNC_INTERVAL": "30 seconds"
+            }
+        }
+    ]
+}

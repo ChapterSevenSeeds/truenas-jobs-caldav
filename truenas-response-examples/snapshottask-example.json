@@ -1,0 +1,52 @@
+[
+    {
+        "dataset": "Stuff",
+        "recursive": true,
+        "lifetime_value": 2,
+        "lifetime_unit": "WEEK",
+        "enabled": true,
+        "exclude": [],
+        "naming_schema": "auto-%Y-%m-%d_%H-%M",
+        "allow_empty": true,
+        "schedule": {
+            "minute": "0",
+            "hour": "0",
+            "dom": "*",
+            "month": "*",
+            "dow": "*",
+            "begin": "00:00",
+            "end": "23:59"
+        },
+        "id": 2,
+        "vmware_sync": false,
+        "state": {
+            "state": "FINISHED",
+            "datetime": "datetime.datetime(2025,9,1,6,0, tzinfo=datetime.timezone.utc)"
+        }
+    },
+    {
+        "dataset": "SATASSD",
+        "recursive": true,
+        "lifetime_value": 2,
+        "lifetime_unit": "WEEK",
+        "enabled": true,
+        "exclude": [],
+        "naming_schema": "auto-%Y-%m-%d_%H-%M",
+        "allow_empty": true,
+        "schedule": {
+            "minute": "0",
+            "hour": "0",
+            "dom": "*",
+            "month": "*",
+            "dow": "*",
+            "begin": "00:00",
+            "end": "23:59"
+        },
+        "id": 3,
+        "vmware_sync": false,
+        "state": {
+            "state": "FINISHED",
+            "datetime": "datetime.datetime(2025,9,1,6,0, tzinfo=datetime.timezone.utc)"
+        }
+    }
+]

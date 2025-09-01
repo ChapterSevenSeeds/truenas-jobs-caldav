@@ -1,0 +1,789 @@
+[
+    {
+        "id": 1,
+        "description": "Media",
+        "path": "/mnt/Stuff/Media",
+        "attributes": {
+            "folder": "Media",
+            "bucket": "tyson-nas-backup",
+            "storage_class": "DEEP_ARCHIVE",
+            "fast_list": true,
+            "region": "us-east-1",
+            "encryption": null
+        },
+        "pre_script": "",
+        "post_script": "",
+        "snapshot": false,
+        "include": [
+            "/Movies/**",
+            "/TV Shows/**"
+        ],
+        "exclude": [],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": null,
+            "method": "cloudsync.sync",
+            "arguments": [
+                1
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": null,
+            "logs_excerpt": "",
+            "progress": {
+                "percent": 100,
+                "description": "869 / 869, 1.797 TiB / 1.797 TiB, 51.575 MiB/s, ETA 0s, checks: 14508 / 14508",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,18,8,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,18,13,23,29, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,18,8,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "COPY",
+        "bwlimit": [
+            {
+                "time": "01:00",
+                "bandwidth": null
+            },
+            {
+                "time": "06:00",
+                "bandwidth": 73400320
+            }
+        ],
+        "transfers": null,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 3,
+            "name": "S3 Restricted",
+            "provider": {
+                "type": "S3",
+                "access_key_id": "",
+                "secret_access_key": "",
+                "endpoint": "",
+                "region": "",
+                "skip_region": false,
+                "signatures_v2": false,
+                "max_upload_parts": 10000
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "2",
+            "dom": "18",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 2,
+        "description": "Backup",
+        "path": "/mnt/Stuff/Backup/",
+        "attributes": {
+            "folder": "/Stuff/Backup",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": 48467,
+            "method": "cloudsync.sync",
+            "arguments": [
+                2
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": "/var/log/jobs/48467.log",
+            "logs_excerpt": "2025/08/31 02:00:04 INFO  : \nTransferred:   \t          0 B / 0 B, -, 0 B/s, ETA -\nElapsed time:         1.2s\n\n2025/08/31 02:00:29 INFO  : \nTransferred:   \t          0 B / 0 B, -, 0 B/s, ETA -\nChecks:                11 / 231, 5%\nElapsed time:        26.2s\nChecking:\n * Grandma Computer Backu…ges/dad_mom_nathan.psd: checking\n... 12501 more lines ...\n * Public/Pictures/Scans …2-08-13-09-04-0002.png: checking\n * Public/Pictures/2009/Y…ce - 2009/DSCI0517.JPG: checking\n * Public/Pictures/Scans …2-08-13-09-04-0003.png: checking\n * Public/Pictures/2009/Y…ce - 2009/DSCI0519.JPG: checking\n * Public/Pictures/Scans …2-08-13-09-04-0004.png: checking\n * Public/Pictures/2009/Y…ce - 2009/DSCI0520.JPG: checking\n * Public/Pictures/Scans …2-08-13-09-04-0005.png: checking\n * Public/Pictures/2009/Y…ce - 2009/DSCI0521.JPG: checking\n\n2025/08/31 02:15:23 INFO  : There was nothing to transfer\n",
+            "progress": {
+                "percent": 100,
+                "description": "checks: 103306 / 103306",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,31,8,0,2, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,31,8,15,23, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,31,8,0,2, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": null,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "2",
+            "dom": "3,10,17,24,31",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 3,
+        "description": "Music Backup",
+        "path": "/mnt/Stuff/Media/Music",
+        "attributes": {
+            "folder": "/Stuff/Media/Music",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": null,
+            "method": "cloudsync.sync",
+            "arguments": [
+                3
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": null,
+            "logs_excerpt": "2025/08/20 02:00:04 INFO  : \nTransferred:   \t          0 B / 0 B, -, 0 B/s, ETA -\nElapsed time:         1.3s\n\n2025/08/20 02:00:26 INFO  : \nTransferred:   \t          0 B / 2.706 GiB, 0%, 0 B/s, ETA -\nChecks:                19 / 244, 8%\nTransferred:            0 / 31, 0%\nElapsed time:        23.3s\nChecking:\n... 10012 more lines ...\nElapsed time:      11m3.3s\nChecking:\n * Tagged Music/Various A…Santa - El matador.mp3: checking\n * Tagged Music/Various A…a - Desapariciones.mp3: checking\n * Tagged Music/Various A… Silencio hospital.mp3: checking\n * Tagged Music/Various A…averas y diablitos.mp3: checking\n * Tagged Music/Various A…de verte con otros.mp3: checking\n * Tagged Music/Various A…ó en un pozo ciego.mp3: checking\n * Tagged Music/Various A… Krapula - La vida.mp3: checking\n\n",
+            "progress": {
+                "percent": 100,
+                "description": "82 / 82, 4.959 GiB / 4.959 GiB, 0 B/s, ETA 0s, checks: 73151 / 73151",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,20,8,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,20,8,11,7, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,20,8,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 4,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "2",
+            "dom": "20",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 4,
+        "description": "Tyson",
+        "path": "/mnt/Stuff/Tyson/",
+        "attributes": {
+            "folder": "/Stuff/Tyson",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "./mnt/Stuff/Tyson/app_config_backup.sh",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [
+            "node_modules/**"
+        ],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": 48333,
+            "method": "cloudsync.sync",
+            "arguments": [
+                4
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": "/var/log/jobs/48333.log",
+            "logs_excerpt": "",
+            "progress": {
+                "percent": 100,
+                "description": "12 / 12,36.521 KiB / 36.521 KiB,0 B/s, ETA 0s, checks: 14316 / 14316",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,31,7,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,31,7,4,28, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,31,7,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 4,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "1",
+            "dom": "3,10,17,24,31",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 5,
+        "description": "NextCloud Data Backup",
+        "path": "/mnt/Stuff/NAS/NextCloudData",
+        "attributes": {
+            "folder": "/Stuff/NAS/NextCloudData",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "./mnt/Stuff/Tyson/nextcloud_db_backup.sh",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [
+            "NextCloudData/data/appdata_*/preview /**",
+            "data/appdata_*/preview/**"
+        ],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": null,
+            "method": "cloudsync.sync",
+            "arguments": [
+                5
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": null,
+            "logs_excerpt": "2025/08/26 02:00:23 INFO  : \nTransferred:   \t          0 B / 0 B, -, 0 B/s, ETA -\nElapsed time:         1.2s\n\n2025/08/26 02:02:13 INFO  : data/.ncdata: Updated modification time in destination\n2025/08/26 02:02:13 INFO  : data/.htaccess: Copied (replaced existing)\n2025/08/26 02:02:13 INFO  : data/index.html: Updated modification time in destination\n2025/08/26 02:02:13 INFO  : data/nextcloud.log: Copied (replaced existing)\n2025/08/26 02:02:13 INFO  : \nTransferred:   \t  107.944 KiB / 153.083 MiB, 0%, 0 B/s, ETA -\n... 98781 more lines ...\n2025/08/26 02:55:26 INFO  : data/ncadmin/files/Personal Pictures/Phone Pictures/2025/08/25-08-17 13-42-07 0482.jpg: Deleted\n2025/08/26 02:55:26 INFO  : data/ncadmin/files/Personal Pictures/Mission Pictures/IMG_2443.JPG: Deleted\n2025/08/26 02:55:26 INFO  : data/ncadmin/files/Personal Pictures/Old phone/IMG_0768.JPG: Deleted\n2025/08/26 02:55:26 INFO  : \nTransferred:   \t  147.795 GiB / 147.795 GiB, 100%, 1.110 MiB/s, ETA 0s\nChecks:            323896 / 323896, 100%\nDeleted:            18609 (files), 0 (dirs), 142.205 GiB (freed)\nTransferred:        18733 / 18733, 100%\nElapsed time:      55m4.3s\n\n",
+            "progress": {
+                "percent": 100,
+                "description": "18733 / 18733, 147.795 GiB / 147.795 GiB, 1.110 MiB/s, ETA 0s, checks: 323896 / 323896",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,26,8,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,26,8,55,27, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,26,8,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 16,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "2",
+            "dom": "5,12,19,26",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 6,
+        "description": "Plex",
+        "path": "/mnt/SATASSD/Plex/Library",
+        "attributes": {
+            "folder": "/Stuff/NAS/Plex/Library",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [
+            "Application Support/Plex Media Server/Cache/**"
+        ],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": 38929,
+            "method": "cloudsync.sync",
+            "arguments": [
+                6
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": "/var/log/jobs/38929.log",
+            "logs_excerpt": "",
+            "progress": {
+                "percent": 100,
+                "description": "2315 / 2315, 4.673 GiB / 4.673 GiB, 0 B/s, ETA 0s, checks: 326097 / 326097",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,28,8,0,2, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,28,8,49,36, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,28,8,0,2, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 16,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "2",
+            "dom": "7,14,21,28",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 10,
+        "description": "NextCloudCore",
+        "path": "/mnt/SATASSD/NextCloudCore",
+        "attributes": {
+            "folder": "/Stuff/NAS/NextCloudCore",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": null,
+            "method": "cloudsync.sync",
+            "arguments": [
+                10
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": null,
+            "logs_excerpt": "",
+            "progress": {
+                "percent": 100,
+                "description": "2726 / 2726, 311.286 MiB / 311.286 MiB, 0 B/s, ETA 0s, checks: 50073 / 50073",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,26,7,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,26,7,22,16, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,26,7,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 16,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "1",
+            "dom": "5,12,19,26",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 11,
+        "description": "LittleApps",
+        "path": "/mnt/SATASSD/LittleApps",
+        "attributes": {
+            "folder": "/Stuff/NAS/LittleApps",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "/mnt/Stuff/Tyson/app_config_backup.sh",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": 51483,
+            "method": "cloudsync.sync",
+            "arguments": [
+                11
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": "/var/log/jobs/51483.log",
+            "logs_excerpt": "",
+            "progress": {
+                "percent": 100,
+                "description": "504 / 504, 872.149 MiB / 872.149 MiB, 170.219 KiB/s, ETA 0s, checks: 25007 / 25007",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,9,1,6,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,9,1,6,4,20, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,9,1,6,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 16,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "0",
+            "dom": "*",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 12,
+        "description": "Audiobooks & Podcasts",
+        "path": "/mnt/Stuff/Media/Audiobooks & Podcasts",
+        "attributes": {
+            "folder": "/Stuff/Media/Audiobooks & Podcasts",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": null,
+            "method": "cloudsync.sync",
+            "arguments": [
+                12
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": null,
+            "logs_excerpt": "2025/08/20 03:00:03 INFO  : \nTransferred:   \t    4.871 MiB / 10.427 GiB, 0%, 0 B/s, ETA -\nTransferred:            0 / 193, 0%\nElapsed time:         1.3s\nTransferring:\n * April 2011 General Con…Priesthood Session.mp3:  0% /56.280Mi, 0/s, -\n * April 2011 General Con… Afternoon Session.mp3:  0% /54.077Mi, 0/s, -\n * April 2011 General Con…ay Morning Session.mp3:  9% /54.087Mi, 0/s, -\n * April 2011 General Con… Afternoon Session.mp3:  0% /54.945Mi, 0/s, -\n * April 2011 General Con…ay Morning Session.mp3:  0% /54.867Mi, 0/s, -\n... 203 more lines ...\n2025/08/20 03:01:41 INFO  : October 2013 General Conference/Sunday Afternoon Session.mp3: Copied (new)\n2025/08/20 03:01:41 INFO  : October 2013 General Conference/Sunday Morning Session.mp3: Copied (new)\n2025/08/20 03:01:41 INFO  : .file_placeholder: Deleted\n2025/08/20 03:01:41 INFO  : \nTransferred:   \t   10.427 GiB / 10.427 GiB, 100%, 98.184 MiB/s, ETA 0s\nChecks:                 1 / 1, 100%\nDeleted:                1 (files), 0 (dirs), 0 B (freed)\nTransferred:          193 / 193, 100%\nElapsed time:      1m39.2s\n\n",
+            "progress": {
+                "percent": 100,
+                "description": "193 / 193, 10.427 GiB / 10.427 GiB, 98.184 MiB/s, ETA 0s, checks: 1 / 1",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,20,9,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,20,9,1,41, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,20,9,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 16,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "3",
+            "dom": "20",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    },
+    {
+        "id": 13,
+        "description": "Immich",
+        "path": "/mnt/Stuff/NAS/ImmichData",
+        "attributes": {
+            "folder": "/Stuff/NAS/Immich",
+            "bucket": "tyson-nas-backup",
+            "fast_list": true
+        },
+        "pre_script": "/mnt/Stuff/Tyson/immich_db_backup.sh",
+        "post_script": "",
+        "snapshot": true,
+        "include": [],
+        "exclude": [],
+        "args": "",
+        "enabled": true,
+        "job": {
+            "id": 48769,
+            "method": "cloudsync.sync",
+            "arguments": [
+                13
+            ],
+            "transient": false,
+            "description": null,
+            "abortable": true,
+            "logs_path": "/var/log/jobs/48769.log",
+            "logs_excerpt": "2025/08/31 04:00:16 INFO  : \nTransferred:   \t          0 B / 0 B, -, 0 B/s, ETA -\nElapsed time:         1.2s\n\n2025/08/31 04:00:30 INFO  : profile/.immich: Copied (replaced existing)\n2025/08/31 04:00:30 INFO  : library/.immich: Copied (replaced existing)\n2025/08/31 04:00:30 INFO  : upload/.immich: Copied (replaced existing)\n2025/08/31 04:00:30 INFO  : thumbs/.immich: Copied (replaced existing)\n2025/08/31 04:00:30 INFO  : encoded-video/.immich: Copied (replaced existing)\n2025/08/31 04:00:30 INFO  : backups/.immich: Copied (replaced existing)\n... 6335 more lines ...\nChecking:\n * upload/09a91c25-5fff-4…-b119-ce604b0d7413.jpg: checking\n * upload/09a91c25-5fff-4…-b005-ffcba627a452.JPG: checking\n * upload/09a91c25-5fff-4…a38c-9191ed3a0fa8.HEIC: checking\n * upload/09a91c25-5fff-4…-a2c6-648a630f627a.MOV: checking\n * upload/09a91c25-5fff-4…-ba2b-29258e6ec149.JPG: checking\n * upload/09a91c25-5fff-4…-9a2b-96849396a155.jpg: checking\n * upload/09a91c25-5fff-4…-85bb-61f9b8df14b3.JPG: checking\n * upload/09a91c25-5fff-4…-a68d-54ef10d12259.JPG: checking\n\n",
+            "progress": {
+                "percent": 100,
+                "description": "28 / 28, 753.065 MiB / 753.065 MiB, 0 B/s, ETA 0s, checks: 48032 / 48032",
+                "extra": null
+            },
+            "result": null,
+            "result_encoding_error": null,
+            "error": null,
+            "exception": null,
+            "exc_info": null,
+            "state": "SUCCESS",
+            "time_started": "datetime.datetime(2025,8,31,10,0,1, tzinfo=datetime.timezone.utc)",
+            "time_finished": "datetime.datetime(2025,8,31,10,7,27, tzinfo=datetime.timezone.utc)",
+            "credentials": {
+                "type": "UNIX_SOCKET",
+                "data": {
+                    "username": "root",
+                    "login_at": "datetime.datetime(2025,8,31,10,0,1, tzinfo=datetime.timezone.utc)"
+                }
+            }
+        },
+        "direction": "PUSH",
+        "transfer_mode": "SYNC",
+        "bwlimit": [],
+        "transfers": 16,
+        "encryption": false,
+        "filename_encryption": false,
+        "encryption_password": "",
+        "encryption_salt": "",
+        "create_empty_src_dirs": false,
+        "follow_symlinks": false,
+        "credentials": {
+            "id": 2,
+            "name": "Storj",
+            "provider": {
+                "type": "STORJ_IX",
+                "access_key_id": "",
+                "secret_access_key": ""
+            }
+        },
+        "schedule": {
+            "minute": "0",
+            "hour": "4",
+            "dom": "3,10,17,24,31",
+            "month": "*",
+            "dow": "*"
+        },
+        "locked": false
+    }
+]

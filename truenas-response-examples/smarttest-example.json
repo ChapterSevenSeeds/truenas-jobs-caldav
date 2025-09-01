@@ -1,0 +1,28 @@
+[
+    {
+        "id": 1,
+        "desc": "Short SMART test",
+        "all_disks": true,
+        "disks": [],
+        "type": "SHORT",
+        "schedule": {
+            "hour": "0",
+            "dom": "5,12,19,26",
+            "month": "*",
+            "dow": "*"
+        }
+    },
+    {
+        "id": 2,
+        "desc": "Long SMART test",
+        "all_disks": true,
+        "disks": [],
+        "type": "LONG",
+        "schedule": {
+            "hour": "0",
+            "dom": "8,22",
+            "month": "*",
+            "dow": "*"
+        }
+    }
+]
