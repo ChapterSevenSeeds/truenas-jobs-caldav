@@ -78,6 +78,6 @@ def cron_to_ical(cron: str) -> ICalResult:
     if not month.is_full():
         options['BYMONTH'] = month.to_list()
 
-    schedule = c.schedule(timezone_str=time.tzname[time.daylight])
+    schedule = c.schedule()
     next_start = schedule.next()
     return ICalResult(next_start, next_start, options)

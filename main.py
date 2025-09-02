@@ -2,7 +2,7 @@ import time
 from truenas_api_client import Client, JSONRPCClient, LegacyClient
 from caldav.davclient import DAVClient, get_davclient
 from caldav.collection import Calendar
-from cron_to_ical import cron_to_ical
+from cron_to_ical import FREQ_HOURLY, FREQ_MINUTELY, cron_to_ical
 from options import Options
 import logging
 
@@ -35,6 +35,9 @@ def create_events(truenas_client: JSONRPCClient | LegacyClient, calendar: Calend
 
         ical = cron_to_ical(cron_str)
         logger.info(f"Resulting ICAL object: {ical}")
+
+        if ical.rrule["FREQ"] in (FREQ_HOURLY, FREQ_MINUTELY):
+            logger.warning("Hourly and minutely FREQs might not be supported by some calendars!")
 
         logger.info("Saving event to calendar...")
         calendar.save_event(
@@ -107,7 +110,7 @@ def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRP
 
 def main():
     options = Options.from_env()
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',)
 
     while True:
         try:
