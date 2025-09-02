@@ -111,22 +111,22 @@ def main():
 
     while True:
         try:
-            with get_davclient(url=f"http://{options.caldav_host}", username=options.caldav_username, password=options.caldav_password) as client:
-                logger.info("Successfully connected to caldav server.")
+            while True:
+                with get_davclient(url=f"http://{options.caldav_host}", username=options.caldav_username, password=options.caldav_password) as client:
+                    logger.info("Successfully connected to caldav server.")
 
-                with Client(uri=f"wss://{options.truenas_host}/api/current", verify_ssl=options.truenas_host_verify_ssl) as c:
-                    login_result = c.call("auth.login_with_api_key", options.truenas_api_key)
+                    with Client(uri=f"wss://{options.truenas_host}/api/current", verify_ssl=options.truenas_host_verify_ssl) as c:
+                        login_result = c.call("auth.login_with_api_key", options.truenas_api_key)
 
-                    if not login_result:
-                        raise Exception("Failed to authenticate with TrueNAS.")
-                    
-                    logger.info("Successfully logged into TrueNAS.")
+                        if not login_result:
+                            raise Exception("Failed to authenticate with TrueNAS.")
 
-                    while True:
+                        logger.info("Successfully logged into TrueNAS.")
+
                         perform_sync(options, client, c)
-                        logger.info(f"Sync finished successfully. Sleeping for {options.sync_interval}.")
-                        time.sleep(options.sync_interval.seconds)
 
+                logger.info(f"Sync finished successfully. Sleeping for {options.sync_interval}.")
+                time.sleep(options.sync_interval.seconds)
         except Exception as e:
             logger.error(f"Error encountered at root loop: {e}")
             logger.error(f"Sleeping for {options.failure_backoff_time} before trying again.")
