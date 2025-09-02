@@ -92,13 +92,13 @@ def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRP
     if not options.include_cloudsyncs:
         logger.info("Ignoring cloudsync tasks...")
     else:
-        logger.info("Ignoring Syncing tasks...")
+        logger.info("Syncing tasks...")
         create_events(truenas_client, truenas_calendar, "cloudsync.query", "enabled", "CloudSync", "description")
 
     if not options.include_smart_tests:
         logger.info("Ignoring SMART tests...")
     else:
-        logger.info("Ignoring Syncing tests...")
+        logger.info("Syncing tests...")
         create_events(truenas_client, truenas_calendar, "smart.test.query", None, "SMART", "desc")
 
     if not options.include_cronjobs:
