@@ -1,0 +1,9 @@
+[mainUser]
+user: user
+collection: .*
+permissions: RWrw
+
+[anonymous]
+user: .*
+collection: user/calendar-id(/.*)?
+permissions: r

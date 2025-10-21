@@ -1,0 +1,16 @@
+services:
+  radicale:
+    restart: unless-stopped
+    image: ghcr.io/kozea/radicale
+    ports:
+      - 5232:5232
+    volumes:
+      - ./config:/etc/radicale
+    networks: []
+    user: 1000:1000
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5232 || exit 1
+      interval: 5m
+      timeout: 3s
+      retries: 3
+      start_period: 2m

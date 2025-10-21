@@ -13,7 +13,7 @@
             "env": {
                 "CALENDAR_ID": "this-should-be-secret",
                 "CALDAV_HOST": "localhost:5232",
-                "CALDAV_USERNAME": "root",
+                "CALDAV_USERNAME": "user",
                 "CALDAV_PASSWORD": "changeme",
                 "TRUENAS_HOST": "192.168.254.10",
                 "TRUENAS_HOST_VERIFY_SSL": "false",
