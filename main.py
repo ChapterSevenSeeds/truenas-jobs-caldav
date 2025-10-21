@@ -1,3 +1,4 @@
+from datetime import timezone
 import time
 from truenas_api_client import Client, JSONRPCClient, LegacyClient
 from caldav.davclient import DAVClient, get_davclient
@@ -41,8 +42,8 @@ def create_events(truenas_client: JSONRPCClient | LegacyClient, calendar: Calend
 
         logger.info("Saving event to calendar...")
         calendar.save_event(
-            dtstart=ical.start.replace(tzinfo=None),
-            dtend=ical.end.replace(tzinfo=None),
+            dtstart=ical.start.astimezone(timezone.utc).replace(tzinfo=None),
+            dtend=ical.end.astimezone(timezone.utc).replace(tzinfo=None),
             rrule=ical.rrule,
             summary=f"{summary_prefix}: {item[summary_suffix_key]}"
         )
