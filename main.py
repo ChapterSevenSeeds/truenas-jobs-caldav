@@ -41,8 +41,8 @@ def create_events(truenas_client: JSONRPCClient | LegacyClient, calendar: Calend
 
         logger.info("Saving event to calendar...")
         calendar.save_event(
-            dtstart=ical.start,
-            dtend=ical.end,
+            dtstart=ical.start.replace(tzinfo=None),
+            dtend=ical.end.replace(tzinfo=None),
             rrule=ical.rrule,
             summary=f"{summary_prefix}: {item[summary_suffix_key]}"
         )
