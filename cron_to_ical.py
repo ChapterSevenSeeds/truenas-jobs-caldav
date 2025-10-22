@@ -1,3 +1,4 @@
+import logging
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -6,6 +7,7 @@ from cron_converter import Cron
 from zoneinfo import ZoneInfo, available_timezones
 from dateutil import tz
 
+logger = logging.getLogger(__name__)
 
 FREQ_MONTHLY = "MONTHLY"
 FREQ_YEARLY = "YEARLY"
@@ -81,25 +83,29 @@ def cron_to_ical(cron: str) -> ICalResult:
     if not month.is_full():
         options['BYMONTH'] = month.to_list()
 
+    # Use the local timezone here for the cron schedule to grab the next start datetime.
     now = datetime.now(tz.gettz(time.tzname[time.daylight]))
-
-    zone_list = sorted(available_timezones())
-
-    candidates: list[str] = []
-    for zname in zone_list:
-        zone = ZoneInfo(zname)
-        z_off = now.utcoffset()
-        z_dst = now.dst()
-
-        # Compare offsets, being careful about None results
-        if z_off == zone.utcoffset(datetime.now()) and z_dst == zone.dst(datetime.now()):
-            candidates.append(zname)
-
-    iana_tz = sorted(candidates)[0]
-
-    schedule = c.schedule(timezone_str=iana_tz)
+    schedule = c.schedule(start_date=now)
     next_start = schedule.next()
 
-    next_start = next_start.replace(tzinfo=ZoneInfo(iana_tz))
+    # Now we need to convert the timezone info from whatever it is to an IANA timezone.
+    # Go grab the first matching timezone with the same offset and dst rules.
+    zone_list = sorted(available_timezones())
+    candidates: list[str] = []
+    for candidate_zone_str in zone_list:
+        candidate_zone = ZoneInfo(candidate_zone_str)
+        local_tz_offset = now.utcoffset()
+        local_tz_dst = now.dst()
+
+        # Compare offsets, being careful about None results
+        if local_tz_offset == candidate_zone.utcoffset(datetime.now()) and local_tz_dst == candidate_zone.dst(datetime.now()):
+            candidates.append(candidate_zone_str)
+
+    if len(candidates) > 0:
+        # If we found candidates, just use the first one.
+        iana_tz = sorted(candidates)[0]
+        next_start = next_start.replace(tzinfo=ZoneInfo(iana_tz))
+    else:
+        logger.warning(f"Could not find IANA timezone for offset {now.utcoffset()} and dst {now.dst()} - using original timezone info. Your calendar may be incorrect!")
 
     return ICalResult(next_start, next_start, options)

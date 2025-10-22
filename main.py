@@ -41,13 +41,13 @@ def create_events(truenas_client: JSONRPCClient | LegacyClient, calendar: Calend
             logger.warning("Hourly and minutely FREQs might not be supported by some calendars!")
 
         logger.info("Saving event to calendar...")
-        saved_event = calendar.save_event(
+        calendar.save_event(
             dtstart=ical.start,
             dtend=ical.end,
             rrule=ical.rrule,
             summary=f"{summary_prefix}: {item[summary_suffix_key]}"
         )
-        logger.info(f"Event {saved_event.data} successfully saved to calendar.")
+        logger.info(f"Event successfully saved to calendar.")
 
 
 def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRPCClient | LegacyClient):
