@@ -3,6 +3,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Sequence, Union
 from cron_converter import Cron
+from zoneinfo import ZoneInfo, available_timezones
+from dateutil import tz
+
 
 FREQ_MONTHLY = "MONTHLY"
 FREQ_YEARLY = "YEARLY"
@@ -78,6 +81,25 @@ def cron_to_ical(cron: str) -> ICalResult:
     if not month.is_full():
         options['BYMONTH'] = month.to_list()
 
-    schedule = c.schedule(timezone_str=time.tzname[time.daylight])
+    now = datetime.now(tz.gettz(time.tzname[time.daylight]))
+
+    zone_list = sorted(available_timezones())
+
+    candidates: list[str] = []
+    for zname in zone_list:
+        zone = ZoneInfo(zname)
+        z_off = now.utcoffset()
+        z_dst = now.dst()
+
+        # Compare offsets, being careful about None results
+        if z_off == zone.utcoffset(datetime.now()) and z_dst == zone.dst(datetime.now()):
+            candidates.append(zname)
+
+    iana_tz = sorted(candidates)[0]
+
+    schedule = c.schedule(timezone_str=iana_tz)
     next_start = schedule.next()
+
+    next_start = next_start.replace(tzinfo=ZoneInfo(iana_tz))
+
     return ICalResult(next_start, next_start, options)
