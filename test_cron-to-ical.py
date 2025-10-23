@@ -49,21 +49,24 @@ def test_every_may_or_june_or_july_22_or_23_at_noon_on_friday():
     assert res.rrule["BYDAY"] == ["FR"]
     assert len(res.rrule) == 6
 
+
 def test_random_days_of_month_at_midnight():
     res = cron_to_ical("0 0 1,5,10,20,25 * *")
     assert res.rrule["FREQ"] == FREQ_MONTHLY
     assert res.rrule["BYMINUTE"] == [0]
     assert res.rrule["BYHOUR"] == [0]
-    assert res.rrule["BYMONTHDAY"] == [1,5,10,20,25]
+    assert res.rrule["BYMONTHDAY"] == [1, 5, 10, 20, 25]
     assert len(res.rrule) == 4
+
 
 def test_every_other_day_of_month_at_midnight():
     res = cron_to_ical("0 0 */2 * *")
     assert res.rrule["FREQ"] == FREQ_MONTHLY
     assert res.rrule["BYMINUTE"] == [0]
     assert res.rrule["BYHOUR"] == [0]
-    assert res.rrule["BYMONTHDAY"] == [1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31]
+    assert res.rrule["BYMONTHDAY"] == [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
     assert len(res.rrule) == 4
+
 
 def test_every_10_minutes():
     res = cron_to_ical("*/10 * * * *")

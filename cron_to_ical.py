@@ -86,7 +86,7 @@ def cron_to_ical(cron: str) -> ICalResult:
     # Use the local timezone here for the cron schedule to grab the next start datetime.
     now = datetime.now(tz.gettz(time.tzname[time.daylight]))
     schedule = c.schedule(start_date=now)
-    next_start = schedule.next()
+    next_start = schedule.prev()
 
     # Now we need to convert the timezone info from whatever it is to an IANA timezone.
     # Go grab the first matching timezone with the same offset and dst rules.
