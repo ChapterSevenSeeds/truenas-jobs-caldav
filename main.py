@@ -1,41 +1,44 @@
-from datetime import timezone
+import re
 import time
+from typing import Dict, Optional
 from truenas_api_client import Client, JSONRPCClient, LegacyClient
 from caldav.davclient import DAVClient, get_davclient
 from caldav.collection import Calendar
 from caldav.calendarobjectresource import Event
+from common import ITEM_TYPE_CLOUDSYNC, ITEM_TYPE_CRONJOB, ITEM_TYPE_SCRUB, ITEM_TYPE_SMART_TEST, ITEM_TYPE_SNAPSHOT, create_item_uid, parse_item_type_from_uid, schedule_to_cron_string
 from cron_to_ical import FREQ_HOURLY, FREQ_MINUTELY, cron_to_ical
 from options import Options
 import logging
 
 logger = logging.getLogger(__name__)
 
-# https://www.truenas.com/docs/api/scale_websocket_api.html#cronjob
-# https://caldav.readthedocs.io/stable/tutorial.html
-# https://radicale.org/v3.html
-
-
-def schedule_to_cron_string(schedule: dict[str, str]) -> str:
-    return f"{schedule.get("minute", "0")} {schedule["hour"]} {schedule["dom"]} {schedule["month"]} {schedule["dow"]}"
-
-def create_item_uid(prefix: str, item_id: int) -> str:
-    return f"truenas-{prefix.lower()}-{item_id}"
 
 def create_events(
+    items_filter: Optional[re.Pattern],
     truenas_client: JSONRPCClient | LegacyClient,
     events: list[Event],
     calendar: Calendar,
     query: str,
     enabled_key: str | None,
-    summary_prefix: str,
-    summary_suffix_key: str
-):
-    logger.info(f"Performing query \"{query}\" for events with summary prefix \"{summary_prefix}\".")
+    item_type: str,
+    item_description_key: str
+) -> set[str]:
+    logger.info(f"Performing query \"{query}\" for events with summary prefix \"{item_type}\".")
 
-    items = truenas_client.call(query)
-    logger.info(f"Found {len(items)} items.")  # type:ignore
-    for item in items:  # type:ignore
-        item_summary = f"{summary_prefix}: {item[summary_suffix_key]}"
+    items: list[Dict] = truenas_client.call(query)  # type: ignore
+    logger.info(f"Found {len(items)} items.")
+
+    event_uids_saved: set[str] = set()
+
+    if items_filter is not None:
+        logger.info(f"Filtering items with pattern \"{items_filter.pattern}\".")
+        filtered_items = [x for x in items if items_filter.search(x[item_description_key]) is not None]
+        logger.info(f"{len(filtered_items)} items remain after filtering.")
+    else:
+        filtered_items = items
+
+    for item in filtered_items:
+        item_summary = f"{item_type}: {item[item_description_key]}"
         logger.info(f"Found item: \"{item_summary}\".")
 
         if enabled_key is not None and not item[enabled_key]:
@@ -51,13 +54,14 @@ def create_events(
         if ical.rrule["FREQ"] in (FREQ_HOURLY, FREQ_MINUTELY):
             logger.warning("Hourly and minutely FREQs might not be supported by some calendars!")
 
-        event_uid = create_item_uid(summary_prefix, item['id'])
-        previous_events: list[Event] = list(filter(lambda x: x.component.uid == event_uid, events))
+        event_uid = create_item_uid(item_type, item['id'])
+        previous_events: list[Event] = [x for x in events if x.component.uid == event_uid]
+
+        event_uids_saved.add(event_uid)
 
         if len(previous_events) > 0:
             logger.info("Updating previously saved event...")
             previous_event = previous_events[0]
-            events.remove(previous_event)
             previous_event.component.dtstart = ical.start
             previous_event.component.dtend = ical.start
             previous_event.component.rrule = ical.rrule
@@ -74,6 +78,8 @@ def create_events(
                 uid=event_uid,
             )
             logger.info(f"Event successfully saved to calendar.")
+
+    return event_uids_saved
 
 
 def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRPCClient | LegacyClient):
@@ -98,41 +104,91 @@ def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRP
 
     all_events = truenas_calendar.events()
 
+    def filter_events_by_type(item_type: str) -> list[Event]:
+        return [x for x in all_events if parse_item_type_from_uid(x.component.uid) == item_type.lower()]
+
+    event_uids_saved: set[str] = set()
+
     # Sync all the things.
 
     if not options.include_snapshots:
         logger.info("Ignoring snapshots...")
     else:
         logger.info("Syncing snapshots...")
-        create_events(truenas_client, all_events, truenas_calendar, "pool.snapshottask.query", "enabled", "Snapshot", "dataset")
+        event_uids_saved = event_uids_saved.union(
+            create_events(
+                options.snapshots_filter,
+                truenas_client,
+                filter_events_by_type(ITEM_TYPE_SNAPSHOT),
+                truenas_calendar,
+                "pool.snapshottask.query",
+                "enabled",
+                ITEM_TYPE_SNAPSHOT,
+                "dataset"))
 
     if not options.include_scrubs:
         logger.info("Ignoring scrubs...")
     else:
         logger.info("Syncing scrubs...")
-        create_events(truenas_client, all_events, truenas_calendar, "pool.scrub.query", "enabled", "Scrub", "pool_name")
+        event_uids_saved = event_uids_saved.union(
+            create_events(
+                options.scrubs_filter,
+                truenas_client,
+                filter_events_by_type(ITEM_TYPE_SCRUB),
+                truenas_calendar,
+                "pool.scrub.query",
+                "enabled",
+                ITEM_TYPE_SCRUB,
+                "pool_name"))
 
     if not options.include_cloudsyncs:
         logger.info("Ignoring cloudsync tasks...")
     else:
         logger.info("Syncing cloudsync tasks...")
-        create_events(truenas_client, all_events, truenas_calendar, "cloudsync.query", "enabled", "CloudSync", "description")
+        event_uids_saved = event_uids_saved.union(
+            create_events(
+                options.cloudsyncs_filter,
+                truenas_client,
+                filter_events_by_type(ITEM_TYPE_CLOUDSYNC),
+                truenas_calendar,
+                "cloudsync.query",
+                "enabled",
+                ITEM_TYPE_CLOUDSYNC,
+                "description"))
 
     if not options.include_smart_tests:
         logger.info("Ignoring SMART tests...")
     else:
         logger.info("Syncing SMART tests...")
-        create_events(truenas_client, all_events, truenas_calendar, "smart.test.query", None, "SMART", "desc")
+        event_uids_saved = event_uids_saved.union(
+            create_events(
+                options.smart_tests_filter,
+                truenas_client,
+                filter_events_by_type(ITEM_TYPE_SMART_TEST),
+                truenas_calendar,
+                "smart.test.query",
+                None,
+                ITEM_TYPE_SMART_TEST,
+                "desc"))
 
     if not options.include_cronjobs:
         logger.info("Ignoring cronjobs...")
     else:
         logger.info("Syncing cronjobs...")
-        create_events(truenas_client, all_events, truenas_calendar, "cronjob.query", "enabled", "CRON", "description")
+        event_uids_saved = event_uids_saved.union(
+            create_events(
+                options.cronjobs_filter,
+                truenas_client,
+                filter_events_by_type(ITEM_TYPE_CRONJOB),
+                truenas_calendar,
+                "cronjob.query",
+                "enabled",
+                ITEM_TYPE_CRONJOB,
+                "description"))
 
     # Remove stale events
     logger.info("Sync complete, removing stale events...")
-    for event in all_events:
+    for event in filter(lambda event: event.component.uid not in event_uids_saved, all_events):
         logger.info(f"Removing stale event with UID {event.component.uid}.")
         event.delete()
 
