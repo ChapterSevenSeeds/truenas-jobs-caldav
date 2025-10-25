@@ -188,7 +188,7 @@ def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRP
 
     # Remove stale events
     logger.info("Sync complete, removing stale events...")
-    for event in filter(lambda event: event.component.uid not in event_uids_saved, all_events):
+    for event in (event for event in all_events if event.component.uid not in event_uids_saved):
         logger.info(f"Removing stale event with UID {event.component.uid}.")
         event.delete()
 
