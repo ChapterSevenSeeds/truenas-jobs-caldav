@@ -11,20 +11,16 @@ COPY main.py main.py
 COPY options.py options.py
 COPY requirements.txt requirements.txt
 
-RUN pip install -r requirements.txt
+RUN python3 -m venv .venv
+RUN .venv/bin/pip install -r requirements.txt
 
-ENTRYPOINT [ "/app/bin/python", "main.py" ]
+ENTRYPOINT [ "/truenas-jobs-caldav/.venv/bin/python", "main.py" ]
 
 # AIO image, contains management script and Radicale
 FROM ghcr.io/kozea/radicale:3.5.7 AS aio
 
-RUN apk add git
-
 COPY --from=base /truenas-jobs-caldav /truenas-jobs-caldav
 WORKDIR /truenas-jobs-caldav
-
 COPY aio_management.py aio_management.py
 
-RUN pip install -r requirements.txt
-
-ENTRYPOINT ["/app/bin/python", "/truenas-jobs-caldav/aio_management.py"]
+ENTRYPOINT ["/truenas-jobs-caldav/.venv/bin/python", "/truenas-jobs-caldav/aio_management.py"]
