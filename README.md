@@ -108,6 +108,10 @@ Then you can use `htpasswd` to generate the users file at `~/radicale/config/use
 
 Once you have the script running and talking to your CalDAV instance, you can access your new calendar with `{caldav host}/some_username/my_calendar`. For example, `https://my-caldav-server.com/truenas-user/truenas-calendar`. Then you can add it to your Google calendar!
 
+## Disclaimer
+
+This script takes complete control over the calendar it creates. It will delete any events that are no longer necessary. I'd recommend against manually adding events to this calendar since they will just disappear the next time the script runs.
+
 ## Environment Variables
 
 These are all the environment variables that the Python script can use.
@@ -136,8 +140,8 @@ These are all the environment variables that the Python script can use.
 ## TODO
 
 -   Fix the TODO in `cron_to_ical.py`.
--   Improve error handling.
--   Add the ability to specify a local `.env` file for local development.
+-   Add versioning with conventional commits.
+-   Subscribe to changes to the 5 event types and react only when something interesting happens. This will help reduce the time that the calendar is out of sync.
 
 ## Development
 

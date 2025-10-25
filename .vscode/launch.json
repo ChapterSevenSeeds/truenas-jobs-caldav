@@ -10,21 +10,6 @@
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
-            "env": {
-                "CALENDAR_ID": "this-should-be-secret",
-                "CALDAV_HOST": "localhost:5232",
-                "CALDAV_USERNAME": "user",
-                "CALDAV_PASSWORD": "changeme",
-                "TRUENAS_HOST": "192.168.254.10",
-                "TRUENAS_API_KEY": "3-Ov7UimAx8BtCMIxoNqEEIUc9lmcPS8NoUxifu6UhQDwYwUXsyysykXx66ddlxeAT",
-                "FAILURE_BACKOFF_TIME": "30 seconds",
-                "SYNC_INTERVAL": "30 seconds",
-
-                "TRUENAS_HOST_USE_SSL": "false",
-                "TRUENAS_HOST_VERIFY_SSL": "false",
-
-                "CRONJOBS_FILTER": "(?i)(Monthly reboot)|(Weekly disk report)"
-            },
             "justMyCode": false
         }
     ]

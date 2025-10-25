@@ -1,6 +1,0 @@
-services:
-  aio:
-    restart: unless-stopped
-    image: chaptersevenseeds/truenas-jobs-caldav-sync:latest
-    networks: []
-    user: 1000:1000

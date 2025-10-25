@@ -9,6 +9,9 @@ from common import ITEM_TYPE_CLOUDSYNC, ITEM_TYPE_CRONJOB, ITEM_TYPE_SCRUB, ITEM
 from cron_to_ical import FREQ_HOURLY, FREQ_MINUTELY, cron_to_ical
 from options import Options
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
