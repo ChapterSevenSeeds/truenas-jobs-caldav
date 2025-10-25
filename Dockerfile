@@ -1,5 +1,4 @@
-# Base image, contains just the main script
-FROM python:3.14.0-alpine3.22 AS base
+FROM python:3.14.0-alpine3.22
 
 RUN apk add git
 
@@ -9,6 +8,7 @@ WORKDIR /truenas-jobs-caldav
 COPY cron_to_ical.py cron_to_ical.py
 COPY main.py main.py
 COPY options.py options.py
+COPY common.py common.py
 COPY requirements.txt requirements.txt
 
 RUN python3 -m venv .venv
