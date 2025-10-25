@@ -19,6 +19,8 @@ ENTRYPOINT [ "/truenas-jobs-caldav/.venv/bin/python", "main.py" ]
 # AIO image, contains management script and Radicale
 FROM ghcr.io/kozea/radicale:3.5.7 AS aio
 
+USER root
+
 RUN apk add --no-cache --virtual git 
 
 COPY --from=base /truenas-jobs-caldav /truenas-jobs-caldav
@@ -28,3 +30,5 @@ COPY aio_management.py aio_management.py
 RUN /truenas-jobs-caldav/.venv/bin/pip install -r requirements.txt
 
 ENTRYPOINT ["/truenas-jobs-caldav/.venv/bin/python", "/truenas-jobs-caldav/aio_management.py"]
+
+USER radicale
