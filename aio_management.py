@@ -1,6 +1,5 @@
-from main import Options
+from options import Options
 import subprocess
-import os
 import time
 
 options = Options.from_env()
