@@ -12,9 +12,10 @@ COPY options.py options.py
 COPY requirements.txt requirements.txt
 
 RUN python3 -m venv .venv
+RUN source .venv/bin/activate
 RUN pip install -r requirements.txt
 
-ENTRYPOINT [ "python3", "main.py" ]
+ENTRYPOINT [ "/truenas-jobs-caldav/.venv/bin/python", "main.py" ]
 
 # AIO image, contains management script and Radicale
 FROM ghcr.io/kozea/radicale:3.5.7 AS aio

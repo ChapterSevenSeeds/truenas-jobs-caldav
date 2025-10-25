@@ -39,7 +39,7 @@ subprocess.run(["/usr/sbin/htpasswd", "-cb", "/etc/radicale/users", options.cald
 subprocess.Popen(["/app/bin/python", "/app/bin/radicale", "--hosts", "0.0.0.0:5232,[::]:5232"])
 
 # Start the main script
-subprocess.Popen(["python3", "/truenas-jobs-caldav/main.py"])
+subprocess.Popen(["/truenas-jobs-caldav/.venv/bin/python", "/truenas-jobs-caldav/main.py"])
 
 # Sleep forever
 while True:
