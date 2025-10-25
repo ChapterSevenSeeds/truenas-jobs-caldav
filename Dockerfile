@@ -24,4 +24,4 @@ COPY --from=base /truenas-jobs-caldav /truenas-jobs-caldav
 WORKDIR /truenas-jobs-caldav
 COPY aio_management.py aio_management.py
 
-ENTRYPOINT ["/app/bin/python", "/truenas-jobs-caldav/aio_management.py"]
+ENTRYPOINT ["/truenas-jobs-caldav/.venv/bin/python", "/truenas-jobs-caldav/aio_management.py"]
