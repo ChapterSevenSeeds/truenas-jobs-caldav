@@ -108,6 +108,17 @@ def create_events(
 
 
 def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRPCClient | LegacyClient):
+    """
+    Performs synchronization of TrueNAS recurring jobs with a CalDAV server.
+    
+    :param options: The parsed options for the synchronization.
+    :type options: Options
+    :param dav_client: The CalDAV client to use for interacting with the calendar.
+    :type dav_client: DAVClient
+    :param truenas_client: The TrueNAS client to use for fetching job data.
+    :type truenas_client: JSONRPCClient | LegacyClient
+    """
+    
     logger.info("Starting sync of recurring TrueNAS jobs with caldav server.")
 
     my_principal = dav_client.principal()

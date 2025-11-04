@@ -142,7 +142,6 @@ These are all the environment variables that the Python script can use.
 ## TODO
 
 -   Fix the TODO in `cron_to_ical.py`.
--   Add versioning with conventional commits.
 -   Subscribe to changes to the 5 event types and react only when something interesting happens. This will help reduce the time that the calendar is out of sync.
 
 ## Development
