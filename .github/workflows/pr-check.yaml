@@ -45,4 +45,4 @@ jobs:
           push: false
           load: true
           tags: |
-            test-${{ github.sha }}    # an ephemeral tag for this run
+            test-${{ github.sha }}
