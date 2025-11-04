@@ -2,6 +2,8 @@
 
 #### A little Python script that reads all recurring events from a TrueNAS instance and syncs them to a CalDAV instance. This makes it so that you can see what your TrueNAS server has planned!
 
+![pylint]()
+
 Can sync the following:
 
 -   Snapshots
