@@ -26,6 +26,28 @@ def create_events(
     item_type: str,
     item_description_key: str
 ) -> set[str]:
+    """
+    Generates calendar events for TrueNAS items of a given type.
+    
+    :param items_filter: A regular expression pattern to filter items.
+    :type items_filter: Optional[re.Pattern]
+    :param truenas_client: The TrueNAS API client to use for fetching item data.
+    :type truenas_client: JSONRPCClient | LegacyClient
+    :param events: A list of existing calendar events.
+    :type events: list[Event]
+    :param calendar: The calendar to which events will be added.
+    :type calendar: Calendar
+    :param query: The query to use for fetching items from the TrueNAS API.
+    :type query: str
+    :param enabled_key: The key to check if the item is enabled.
+    :type enabled_key: str | None
+    :param item_type: The type of the item.
+    :type item_type: str
+    :param item_description_key: The key for the item description.
+    :type item_description_key: str
+    :return: A set of event UIDs that were created or updated.
+    :rtype: set[str]
+    """
     logger.info(f"Performing query \"{query}\" for events with summary prefix \"{item_type}\".")
 
     items: list[Dict] = truenas_client.call(query)  # type: ignore
