@@ -1,14 +1,14 @@
-FROM python:3.14.0-alpine3.22
+FROM python:3.13.3-alpine3.22
 
 RUN apk add git
 
 RUN mkdir /truenas-jobs-caldav
 WORKDIR /truenas-jobs-caldav
 
-COPY cron_to_ical.py cron_to_ical.py
-COPY main.py main.py
-COPY options.py options.py
-COPY common.py common.py
+COPY src/cron_to_ical.py cron_to_ical.py
+COPY src/main.py main.py
+COPY src/options.py options.py
+COPY src/common.py common.py
 COPY requirements.txt requirements.txt
 
 RUN python3 -m venv .venv

@@ -1,0 +1,39 @@
+name: Manual release -> build & push to Docker Hub
+
+on:
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: "Tag to release (e.g. v1.4.2)"
+                required: true
+
+jobs:
+    build-and-push:
+        name: Build & push Docker images (manual)
+        runs-on: ubuntu-latest
+
+        if: ${{ github.actor == 'ChapterSevenSeeds' }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  registry: docker.io
+                  username: ${{ vars.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Build and push images to Docker Hub
+              uses: docker/build-push-action@v4
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  push: true
+                  tags: |
+                      ${{ vars.DOCKERHUB_USERNAME }}/truenas-jobs-caldav-sync:${{ github.event.inputs.tag }}
+                      ${{ vars.DOCKERHUB_USERNAME }}/truenas-jobs-caldav-sync:latest
