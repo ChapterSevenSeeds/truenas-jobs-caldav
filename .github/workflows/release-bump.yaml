@@ -15,16 +15,9 @@ jobs:
     name: Create release tag (release-please)
     runs-on: ubuntu-latest
     steps:
-      - name: Run release-please
-        id: release
-        uses: googleapis/release-please-action@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: simple
-          skip-github-pull-request: true
-
-      - name: Echo created tag (if any)
+      - name: install autotag binary
         run: |
-          echo "release_created = ${{ steps.release.outputs.release_created }}"
-          echo "tag_name        = ${{ steps.release.outputs.tag_name }}"
-          echo "version         = ${{ steps.release.outputs.version }}"
+          curl -sL https://git.io/autotag-install | sudo sh -s -- -b /usr/bin
+      - name: increment version
+        run: |
+          autotag --scheme=conventional
