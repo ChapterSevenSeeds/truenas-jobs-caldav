@@ -1,5 +1,3 @@
-![pylint](https://img.shields.io/badge/PyLint-7.80-orange?logo=python&logoColor=white)
-
 # TrueNAS Jobs CalDAV
 
 #### A little Python script that reads all recurring events from a TrueNAS instance and syncs them to a CalDAV instance. This makes it so that you can see what your TrueNAS server has planned!
@@ -10,7 +8,6 @@ Can sync the following:
 -   Scrubs
 -   Cloud sync tasks
 -   Cron jobs
--   SMART tests
 
 # Installation
 
@@ -140,7 +137,7 @@ These are all the environment variables that the Python script can use.
 ## TODO
 
 -   Fix the TODO in `cron_to_ical.py`.
--   Subscribe to changes to the 5 event types and react only when something interesting happens. This will help reduce the time that the calendar is out of sync.
+-   Subscribe to changes to the 4 event types and react only when something interesting happens. This will help reduce the time that the calendar is out of sync.
 
 ## Development
 
