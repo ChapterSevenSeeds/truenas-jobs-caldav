@@ -1,4 +1,4 @@
-name: Manual release -> build & push to Docker Hub
+name: Manual release
 
 permissions:
   contents: write
@@ -8,7 +8,7 @@ on:
 
 jobs:
     create-release:
-      name: Create release tag
+      name: Create release
       runs-on: ubuntu-latest
       outputs:
         new-tag-version: ${{ steps.ccv.outputs.new-tag-version }}
@@ -31,7 +31,7 @@ jobs:
             draft: false
             prerelease: false
     build-and-push:
-        name: Build & push Docker images (manual)
+        name: Build & push Docker images
         runs-on: ubuntu-latest
         needs: create-release
         if: github.actor == 'ChapterSevenSeeds' && needs.create-release.outputs.new-tag-created == 'true'

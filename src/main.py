@@ -5,7 +5,7 @@ from truenas_api_client import Client, JSONRPCClient, LegacyClient
 from caldav.davclient import DAVClient, get_davclient
 from caldav.collection import Calendar
 from caldav.calendarobjectresource import Event
-from common import ITEM_TYPE_CLOUDSYNC, ITEM_TYPE_CRONJOB, ITEM_TYPE_SCRUB, ITEM_TYPE_SMART_TEST, ITEM_TYPE_SNAPSHOT, create_item_uid, parse_item_type_from_uid, schedule_to_cron_string
+from common import ITEM_TYPE_CLOUDSYNC, ITEM_TYPE_CRONJOB, ITEM_TYPE_SCRUB, ITEM_TYPE_SNAPSHOT, create_item_uid, parse_item_type_from_uid, schedule_to_cron_string
 from cron_to_ical import FREQ_HOURLY, FREQ_MINUTELY, cron_to_ical
 from options import Options
 import logging

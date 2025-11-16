@@ -10,7 +10,6 @@ Can sync the following:
 -   Scrubs
 -   Cloud sync tasks
 -   Cron jobs
--   SMART tests
 
 # Installation
 
@@ -140,7 +139,7 @@ These are all the environment variables that the Python script can use.
 ## TODO
 
 -   Fix the TODO in `cron_to_ical.py`.
--   Subscribe to changes to the 5 event types and react only when something interesting happens. This will help reduce the time that the calendar is out of sync.
+-   Subscribe to changes to the 4 event types and react only when something interesting happens. This will help reduce the time that the calendar is out of sync.
 
 ## Development
 

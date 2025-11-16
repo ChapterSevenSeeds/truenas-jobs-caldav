@@ -5,7 +5,6 @@
 ITEM_TYPE_SCRUB = "Scrub"
 ITEM_TYPE_SNAPSHOT = "Snapshot"
 ITEM_TYPE_CLOUDSYNC = "CloudSync"
-ITEM_TYPE_SMART_TEST = "SMART Test"
 ITEM_TYPE_CRONJOB = "CronJob"
 
 def schedule_to_cron_string(schedule: dict[str, str]) -> str:
