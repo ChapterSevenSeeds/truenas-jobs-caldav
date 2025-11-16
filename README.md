@@ -1,4 +1,4 @@
-![pylint](https://img.shields.io/badge/PyLint-7.80-orange?logo=python&logoColor=white)
+![pylint](https://img.shields.io/badge/PyLint-7.83-orange?logo=python&logoColor=white)
 
 # TrueNAS Jobs CalDAV
 
