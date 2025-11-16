@@ -21,6 +21,15 @@ jobs:
         - name: Bump tag if necessary
           id: ccv
           uses: smlx/ccv@v0.10.0
+        - name: Create GitHub Release
+          if: steps.ccv.outputs.new-tag == 'true'
+          uses: ncipollo/release-action@v1.20.0
+          with:
+            tag: ${{ steps.ccv.outputs.new-tag-version }}
+            name: ${{ steps.ccv.outputs.new-tag-version }}
+            generateReleaseNotes: true
+            draft: false
+            prerelease: false
     build-and-push:
         name: Build & push Docker images (manual)
         runs-on: ubuntu-latest
