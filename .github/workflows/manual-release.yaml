@@ -1,22 +1,37 @@
 name: Manual release -> build & push to Docker Hub
 
+permissions:
+  contents: write
+
 on:
-    workflow_dispatch:
-        inputs:
-            tag:
-                description: "Tag to release (e.g. v1.4.2)"
-                required: true
+    workflow_dispatch: {}
 
 jobs:
+    create-release:
+      name: Create release tag
+      runs-on: ubuntu-latest
+      outputs:
+        new-tag-version: ${{ steps.ccv.outputs.new-tag-version }}
+        new-tag-created: ${{ steps.ccv.outputs.new-tag }}
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - name: Bump tag if necessary
+          id: ccv
+          uses: smlx/ccv@v0.10.0
     build-and-push:
         name: Build & push Docker images (manual)
         runs-on: ubuntu-latest
-
-        if: ${{ github.actor == 'ChapterSevenSeeds' }}
-
+        needs: create-release
+        if: github.actor == 'ChapterSevenSeeds' && needs.create-release.outputs.new-tag-created == 'true'
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  ref: ${{ needs.create-release.outputs.new-tag-version }}
 
             - name: Set up Buildx
               uses: docker/setup-buildx-action@v3
@@ -35,5 +50,5 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: |
-                      ${{ vars.DOCKERHUB_USERNAME }}/truenas-jobs-caldav-sync:${{ github.event.inputs.tag }}
+                      ${{ vars.DOCKERHUB_USERNAME }}/truenas-jobs-caldav-sync:${{ needs.create-release.outputs.new-tag-version }}
                       ${{ vars.DOCKERHUB_USERNAME }}/truenas-jobs-caldav-sync:latest

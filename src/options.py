@@ -16,13 +16,11 @@ TRUENAS_API_KEY_ENV = "TRUENAS_API_KEY"
 INCLUDE_SNAPSHOTS_ENV = "INCLUDE_SNAPSHOTS"
 INCLUDE_SCRUBS_ENV = "INCLUDE_SCRUBS"
 INCLUDE_CLOUDSYNCS_ENV = "INCLUDE_CLOUDSYNCS"
-INCLUDE_SMART_TESTS_ENV = "INCLUDE_SMART_TESTS"
 INCLUDE_CRONJOBS_ENV = "INCLUDE_CRONJOBS"
 
 SNAPSHOTS_REGEX_ENV = "SNAPSHOTS_FILTER"
 SCRUBS_REGEX_ENV = "SCRUBS_FILTER"
 CLOUDSYNCS_REGEX_ENV = "CLOUDSYNCS_FILTER"
-SMART_TESTS_REGEX_ENV = "SMART_TESTS_FILTER"
 CRONJOBS_REGEX_ENV = "CRONJOBS_FILTER"
 
 FAILURE_BACKOFF_TIME_ENV = "FAILURE_BACKOFF_TIME"
@@ -76,13 +74,11 @@ class Options:
     include_snapshots: bool
     include_scrubs: bool
     include_cloudsyncs: bool
-    include_smart_tests: bool
     include_cronjobs: bool
 
     snapshots_filter: Optional[re.Pattern]
     scrubs_filter: Optional[re.Pattern]
     cloudsyncs_filter: Optional[re.Pattern]
-    smart_tests_filter: Optional[re.Pattern]
     cronjobs_filter: Optional[re.Pattern]
 
     failure_backoff_time: Duration
@@ -102,13 +98,11 @@ class Options:
         include_snapshots = parse_bool(INCLUDE_SNAPSHOTS_ENV, False, True)
         include_scrubs = parse_bool(INCLUDE_SCRUBS_ENV, False, True)
         include_cloudsyncs = parse_bool(INCLUDE_CLOUDSYNCS_ENV, False, True)
-        include_smart_tests = parse_bool(INCLUDE_SMART_TESTS_ENV, False, True)
         include_cronjobs = parse_bool(INCLUDE_CRONJOBS_ENV, False, True)
 
         snapshots_filter = compile_regex(SNAPSHOTS_REGEX_ENV)
         scrubs_filter = compile_regex(SCRUBS_REGEX_ENV)
         cloudsyncs_filter = compile_regex(CLOUDSYNCS_REGEX_ENV)
-        smart_tests_filter = compile_regex(SMART_TESTS_REGEX_ENV)
         cronjobs_filter = compile_regex(CRONJOBS_REGEX_ENV)
 
         failure_backoff_time = Duration(parse_string(FAILURE_BACKOFF_TIME_ENV, False, "15 minutes"))
@@ -126,13 +120,11 @@ class Options:
                        include_snapshots,
                        include_scrubs,
                        include_cloudsyncs,
-                       include_smart_tests,
                        include_cronjobs,
 
                        snapshots_filter,
                        scrubs_filter,
                        cloudsyncs_filter,
-                       smart_tests_filter,
                        cronjobs_filter,
 
                        failure_backoff_time,
