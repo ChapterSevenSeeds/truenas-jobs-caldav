@@ -192,21 +192,6 @@ def perform_sync(options: Options, dav_client: DAVClient, truenas_client: JSONRP
                 ITEM_TYPE_CLOUDSYNC,
                 "description"))
 
-    if not options.include_smart_tests:
-        logger.info("Ignoring SMART tests...")
-    else:
-        logger.info("Syncing SMART tests...")
-        event_uids_saved = event_uids_saved.union(
-            create_events(
-                options.smart_tests_filter,
-                truenas_client,
-                filter_events_by_type(ITEM_TYPE_SMART_TEST),
-                truenas_calendar,
-                "smart.test.query",
-                None,
-                ITEM_TYPE_SMART_TEST,
-                "desc"))
-
     if not options.include_cronjobs:
         logger.info("Ignoring cronjobs...")
     else:

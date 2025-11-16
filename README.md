@@ -129,14 +129,12 @@ These are all the environment variables that the Python script can use.
 | `INCLUDE_SNAPSHOTS` | True or false. | No | true | Include snapshots in the generated iCal events? |
 | `INCLUDE_SCRUBS` | True or false. | No | true | Include scrubs in the generated iCal events? |
 | `INCLUDE_CLOUDSYNCS` | True or false. | No | true | Include cloudsync tasks in the generated iCal events? |
-| `INCLUDE_SMART_TESTS` | True or false. | No | true | Include SMART tests in the generated iCal events? |
 | `INCLUDE_CRONJOBS` | True or false. | No | true | Include CRON jobs in the generated iCal events? |
 | `FAILURE_BACKOFF_TIME` | Something parseable by [this](https://pypi.org/project/durations-nlp/). | No | 15 minutes | How long to sleep after encountering an error before trying again. |
 | `SYNC_INTERVAL` | Something parseable by [this](https://pypi.org/project/durations-nlp/). | No | 1 hour | Time duration between calendar syncs. |
 | `SNAPSHOTS_FILTER` | Python regular expression | No | | Syncs only those snapshots whose dataset matches this regular expression. Leave empty to sync all. |
 | `SCRUBS_FILTER` | Python regular expression | No | | Syncs only those scrubs whose pool name matches this regular expression. Leave empty to sync all. |
 | `CLOUDSYNCS_FILTER` | Python regular expression | No | | Syncs only those cloud sync tasks whose description matches this regular expression. Leave empty to sync all. |
-| `SMART_TESTS_FILTER` | Python regular expression | No | | Syncs only those SMART tests whose description matches this regular expression. Leave empty to sync all. |
 | `CRONJOBS_FILTER` | Python regular expression | No | | Syncs only those cronjobs whose description matches this regular expression. Leave empty to sync all. |
 
 ## TODO
