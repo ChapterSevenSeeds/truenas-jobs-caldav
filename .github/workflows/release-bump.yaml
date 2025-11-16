@@ -12,9 +12,11 @@ permissions:
 
 jobs:
   release-please:
-    name: Create release tag (release-please)
+    name: Create release tag
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: install autotag binary
         run: |
           curl -sL https://git.io/autotag-install | sudo sh -s -- -b /usr/bin
