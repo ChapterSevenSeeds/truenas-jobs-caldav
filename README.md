@@ -4,10 +4,10 @@
 
 Can export the following:
 
--   Snapshots
--   Scrubs
--   Cloud sync tasks
--   Cron jobs
+- Snapshots
+- Scrubs
+- Cloud sync tasks
+- Cron jobs
 
 # Installation
 
@@ -93,25 +93,25 @@ curl http://localhost:8080/health
 
 These are all the environment variables that the Python script can use.
 
-| Variable | Allowed Values | Required | Default | Description |
-| :------- | :------------- | :------- | :------ | :---------- |
-| `CALENDAR_NAME` | Any URL-safe string. | Yes | - | This becomes the path segment of the HTTP endpoint (e.g., if `CALENDAR_NAME=jobs`, the endpoint will be `/jobs`). Choose a unique, hard-to-guess name for security if exposing to the internet. |
-| `HTTP_PORT` | Any valid port number (1-65535). | No | 8080 | The port on which the HTTP server will listen. |
-| `TRUENAS_HOST` | Any normal URL host and port. | Yes | - | This is the host of your TrueNAS instance. The script will connect to the websocket endpoint at `wss://{TRUENAS_HOST}/api/current`. |
-| `TRUENAS_HOST_VERIFY_SSL` | True or false. | No | true | Should the script verify SSL of the `wss` endpoint? You'll likely need to set this to false if your instance is serving the default TrueNAS certificate. |
-| `TRUENAS_API_KEY` | Any string. | Yes | - | The script will authenticate with your TrueNAS instance using this API key. See [this](https://www.truenas.com/docs/scale/scaletutorials/toptoolbar/managingapikeys/) for help with creating a new API key. |
-| `INCLUDE_SNAPSHOTS` | True or false. | No | true | Include snapshots in the generated iCal events? |
-| `INCLUDE_SCRUBS` | True or false. | No | true | Include scrubs in the generated iCal events? |
-| `INCLUDE_CLOUDSYNCS` | True or false. | No | true | Include cloudsync tasks in the generated iCal events? |
-| `INCLUDE_CRONJOBS` | True or false. | No | true | Include CRON jobs in the generated iCal events? |
-| `SNAPSHOTS_FILTER` | Python regular expression | No | | Exports only those snapshots whose dataset matches this regular expression. Leave empty to export all. |
-| `SCRUBS_FILTER` | Python regular expression | No | | Exports only those scrubs whose pool name matches this regular expression. Leave empty to export all. |
-| `CLOUDSYNCS_FILTER` | Python regular expression | No | | Exports only those cloud sync tasks whose description matches this regular expression. Leave empty to export all. |
-| `CRONJOBS_FILTER` | Python regular expression | No | | Exports only those cronjobs whose description matches this regular expression. Leave empty to export all. |
+| Variable                  | Allowed Values                   | Required | Default | Description                                                                                                                                                                                                 |
+| :------------------------ | :------------------------------- | :------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CALENDAR_NAME`           | Any URL-safe string.             | Yes      | -       | This becomes the path segment of the HTTP endpoint (e.g., if `CALENDAR_NAME=jobs`, the endpoint will be `/jobs`). Choose a unique, hard-to-guess name for security if exposing to the internet.             |
+| `HTTP_PORT`               | Any valid port number (1-65535). | No       | 8080    | The port on which the HTTP server will listen.                                                                                                                                                              |
+| `TRUENAS_HOST`            | Any normal URL host and port.    | Yes      | -       | This is the host of your TrueNAS instance. The script will connect to the websocket endpoint at `wss://{TRUENAS_HOST}/api/current`.                                                                         |
+| `TRUENAS_HOST_VERIFY_SSL` | True or false.                   | No       | true    | Should the script verify SSL of the `wss` endpoint? You'll likely need to set this to false if your instance is serving the default TrueNAS certificate.                                                    |
+| `TRUENAS_API_KEY`         | Any string.                      | Yes      | -       | The script will authenticate with your TrueNAS instance using this API key. See [this](https://www.truenas.com/docs/scale/scaletutorials/toptoolbar/managingapikeys/) for help with creating a new API key. |
+| `INCLUDE_SNAPSHOTS`       | True or false.                   | No       | true    | Include snapshots in the generated iCal events?                                                                                                                                                             |
+| `INCLUDE_SCRUBS`          | True or false.                   | No       | true    | Include scrubs in the generated iCal events?                                                                                                                                                                |
+| `INCLUDE_CLOUDSYNCS`      | True or false.                   | No       | true    | Include cloudsync tasks in the generated iCal events?                                                                                                                                                       |
+| `INCLUDE_CRONJOBS`        | True or false.                   | No       | true    | Include CRON jobs in the generated iCal events?                                                                                                                                                             |
+| `SNAPSHOTS_FILTER`        | Python regular expression        | No       |         | Exports only those snapshots whose dataset matches this regular expression. Leave empty to export all.                                                                                                      |
+| `SCRUBS_FILTER`           | Python regular expression        | No       |         | Exports only those scrubs whose pool name matches this regular expression. Leave empty to export all.                                                                                                       |
+| `CLOUDSYNCS_FILTER`       | Python regular expression        | No       |         | Exports only those cloud sync tasks whose description matches this regular expression. Leave empty to export all.                                                                                           |
+| `CRONJOBS_FILTER`         | Python regular expression        | No       |         | Exports only those cronjobs whose description matches this regular expression. Leave empty to export all.                                                                                                   |
 
 ## TODO
 
--   Fix the TODO in `cron_to_ical.py`.
+- Fix the TODO in `cron_to_ical.py`.
 
 ## Development
 
