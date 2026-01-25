@@ -91,7 +91,9 @@ def create_events(
             previous_event.component.dtend = ical.start
             previous_event.component.rrule = ical.rrule
             previous_event.component.summary = item_summary
-            previous_event.save(only_this_recurrence=False, all_recurrences=True, no_create=True)
+            # See the docstring for save() for why both recurrence flags are False.
+            # In short, setting both to false will force send the rrule to the server.
+            previous_event.save(only_this_recurrence=False, all_recurrences=False, no_create=True)
             logger.info("Previously saved event successfully updated...")
         else:
             logger.info("Saving event to calendar...")
