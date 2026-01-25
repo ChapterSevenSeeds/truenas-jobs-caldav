@@ -20,9 +20,3 @@ def schedule_to_cron_string(schedule: dict[str, str]) -> str:
 
 def create_item_uid(prefix: str, item_id: int) -> str:
     return f"truenas-{prefix.lower()}-{item_id}"
-
-def parse_item_type_from_uid(uid: str) -> str | None:
-    parts = uid.split("-")
-    if len(parts) >= 3 and parts[0] == "truenas":
-        return parts[1].lower()
-    return None

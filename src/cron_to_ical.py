@@ -87,7 +87,7 @@ def cron_to_ical(cron: str) -> ICalResult:
     now = datetime.now(tz.gettz(time.tzname[time.daylight]))
     schedule = c.schedule(start_date=now)
     
-    # Scoot back 10 times to fill some the calendar backwards a bit.
+    # Scoot back 10 times to fill the calendar backwards a bit.
     for _ in range(10):
         schedule.prev()
 
