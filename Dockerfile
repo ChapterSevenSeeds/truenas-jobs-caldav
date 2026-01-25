@@ -9,9 +9,13 @@ COPY src/cron_to_ical.py cron_to_ical.py
 COPY src/main.py main.py
 COPY src/options.py options.py
 COPY src/common.py common.py
+COPY src/job_fetcher.py job_fetcher.py
+COPY src/http_server.py http_server.py
 COPY requirements.txt requirements.txt
 
 RUN python3 -m venv .venv
 RUN /truenas-jobs-caldav/.venv/bin/pip install -r requirements.txt
+
+EXPOSE 8080
 
 ENTRYPOINT [ "/truenas-jobs-caldav/.venv/bin/python", "main.py" ]
