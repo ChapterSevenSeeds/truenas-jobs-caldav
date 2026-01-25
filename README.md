@@ -1,8 +1,8 @@
-# TrueNAS Jobs CalDAV
+# TrueNAS Jobs iCalendar HTTP Server
 
-#### A little Python script that reads all recurring events from a TrueNAS instance and syncs them to a CalDAV instance. This makes it so that you can see what your TrueNAS server has planned!
+#### A Python script that exposes an HTTP endpoint to retrieve recurring events from a TrueNAS instance as an iCalendar (.ics) file. This makes it easy to see what your TrueNAS server has scheduled!
 
-Can sync the following:
+Can export the following:
 
 -   Snapshots
 -   Scrubs
@@ -13,131 +13,105 @@ Can sync the following:
 
 ### Docker
 
-If you already have a CalDAV server running, you can spin up a new Docker container.
+You can spin up a new Docker container to run the HTTP server.
 
 ```sh
 docker run -d \
--e CALENDAR_ID=my_calendar \
--e CALDAV_HOST=some_server:5232 \
--e CALDAV_USERNAME=some_username \
--e CALDAV_PASSWORD=some_password \
+-e CALENDAR_NAME=truenas-jobs \
+-e HTTP_PORT=8080 \
 -e TRUENAS_HOST=my_truenas:9001 \
 -e TRUENAS_HOST_VERIFY_SSL=false \
 -e TRUENAS_API_KEY=my_api_key \
 -v /etc/localtime:/etc/localtime:ro \
+-p 8080:8080 \
 chaptersevenseeds/truenas-jobs-caldav-sync
 ```
 
 ### Docker Compose
 
-If you want a quick all-in-one solution, you can use Docker Compose.
+If you want to use Docker Compose:
 
 ```yaml
 # compose.yaml
 
 services:
-    radicale:
-        restart: unless-stopped
-        image: ghcr.io/kozea/radicale
-        ports:
-            - 5232:5232
-        volumes:
-            - ~/radicale/config:/etc/radicale
-            - ~/radicale/data:/var/lib/radicale
-        networks: []
-        user: 1000:1000
-        healthcheck:
-            # The radicale image only has wget, no curl.
-            test: wget --no-verbose --tries=1 --spider http://localhost:5232 || exit 1
-            interval: 5m
-            timeout: 3s
-            retries: 3
-            start_period: 2m
-    truenas-jobs-caldav-sync:
+    truenas-jobs-http:
         restart: unless-stopped
         image: chaptersevenseeds/truenas-jobs-caldav-sync
         volumes:
             # We need this so that the times for all iCal events are correct (assuming the machine running this script will have the same timezone as your TrueNAS machine).
             - /etc/localtime:/etc/localtime:ro
-        depends_on:
-            radicale:
-                condition: service_healthy
+        ports:
+            - 8080:8080
         environment:
-            - CALENDAR_ID=my_calendar
-            - CALDAV_HOST=radicale:5232
-            - CALDAV_USERNAME=some_username
-            - CALDAV_PASSWORD=some_password
+            - CALENDAR_NAME=truenas-jobs
+            - HTTP_PORT=8080
             - TRUENAS_HOST=my_truenas:9001
             - TRUENAS_HOST_VERIFY_SSL=false
             - TRUENAS_API_KEY=my_api_key
 ```
 
-```conf
-# ~/radicale/config/config
-
-[auth]
-type = htpasswd
-htpasswd_filename = /etc/radicale/users
-htpasswd_encryption = autodetect
-
-[rights]
-type = from_file
-file = /etc/radicale/rights
-```
-
-```conf
-# ~/radicale/config/rights
-
-# Allow the main user to read and modify everything.
-[mainUser]
-user: some_username
-collection: .*
-permissions: RWrw
-
-# Only allow anonymous users readonly access to the one automatically generated calendar.
-[anonymous]
-user: .*
-collection: some_username/my_calendar(/.*)?
-permissions: r
-```
-
-Then you can use `htpasswd` to generate the users file at `~/radicale/config/users`. See [here](https://radicale.org/v3.html#authentication) for a quick example of that.
-
 ## Usage
 
-Once you have the script running and talking to your CalDAV instance, you can access your new calendar with `{caldav host}/some_username/my_calendar`. For example, `https://my-caldav-server.com/truenas-user/truenas-calendar`. Then you can add it to your Google calendar!
+Once you have the script running, you can access your calendar at:
 
-## Disclaimer
+```
+http://localhost:8080/{CALENDAR_NAME}
+```
 
-This script takes complete control over the calendar it creates. It will delete any events that are no longer necessary. I'd recommend against manually adding events to this calendar since they will just disappear the next time the script runs.
+For example, if you set `CALENDAR_NAME=truenas-jobs`, the endpoint would be:
+
+```
+http://localhost:8080/truenas-jobs
+```
+
+### Example: Using curl
+
+```sh
+curl http://localhost:8080/truenas-jobs -o truenas-jobs.ics
+```
+
+### Example: Adding to Calendar Applications
+
+You can add this URL directly to most calendar applications (Google Calendar, Apple Calendar, etc.) by subscribing to the URL:
+
+```
+http://your-server:8080/truenas-jobs
+```
+
+The calendar will automatically update each time it's refreshed by your calendar application.
+
+### Health Check
+
+A health check endpoint is available at `/health`:
+
+```sh
+curl http://localhost:8080/health
+```
 
 ## Environment Variables
 
 These are all the environment variables that the Python script can use.
+
 | Variable | Allowed Values | Required | Default | Description |
 | :------- | :------------- | :------- | :------ | :---------- |
-| `CALENDAR_ID` | Anything encodable into a URL path. | Yes | - | This becomes the ID of the autogenerated calendar. If you plan on exposing this calendar to the internet, I would recommend making this a very obfuscated string so that no one accidentallyies their way into your calendar. |
-| `CALDAV_HOST` | Any normal URL host and port (i.e. `192.168.1.22:5232`). | Yes | - | This is the host of your CalDAV instance. The script will attempt to connect to `http://{CALDAV_HOST}`. |
-| `CALDAV_USERNAME` | Any string. | Yes | - | The username of the CalDAV user you want to use for the autogenerated calendar. |
-| `CALDAV_PASSWORD` | Any string. | Yes | - | The password of the user you specified with `CALDAV_USERNAME`. |
-| `TRUENAS_HOST` | Any normal URL host and port. | Yes | - | This is the host of your TrueNAS instance. The script will use [this](https://github.com/truenas/api_client) package to connect to the websocket endpoint at `"wss://{TRUENAS_HOST}/api/current"`. |
-| `TRUENAS_HOST_VERIFY_SSL` | True or false. | No | true | Should the script verify SSL of the `wss` endpoint it's connecting to on your TrueNAS instance? You'll likely have to set this to false if your instance is serving the default TrueNAS certificate. I did try connecting to the `ws` endpoint on my instance, but apparently TrueNAS wasn't having it and immediately revoked my API key 🤷. |
+| `CALENDAR_NAME` | Any URL-safe string. | Yes | - | This becomes the path segment of the HTTP endpoint (e.g., if `CALENDAR_NAME=jobs`, the endpoint will be `/jobs`). Choose a unique, hard-to-guess name for security if exposing to the internet. |
+| `HTTP_PORT` | Any valid port number (1-65535). | No | 8080 | The port on which the HTTP server will listen. |
+| `TRUENAS_HOST` | Any normal URL host and port. | Yes | - | This is the host of your TrueNAS instance. The script will connect to the websocket endpoint at `wss://{TRUENAS_HOST}/api/current`. |
+| `TRUENAS_HOST_VERIFY_SSL` | True or false. | No | true | Should the script verify SSL of the `wss` endpoint? You'll likely need to set this to false if your instance is serving the default TrueNAS certificate. |
 | `TRUENAS_API_KEY` | Any string. | Yes | - | The script will authenticate with your TrueNAS instance using this API key. See [this](https://www.truenas.com/docs/scale/scaletutorials/toptoolbar/managingapikeys/) for help with creating a new API key. |
 | `INCLUDE_SNAPSHOTS` | True or false. | No | true | Include snapshots in the generated iCal events? |
 | `INCLUDE_SCRUBS` | True or false. | No | true | Include scrubs in the generated iCal events? |
 | `INCLUDE_CLOUDSYNCS` | True or false. | No | true | Include cloudsync tasks in the generated iCal events? |
 | `INCLUDE_CRONJOBS` | True or false. | No | true | Include CRON jobs in the generated iCal events? |
-| `FAILURE_BACKOFF_TIME` | Something parseable by [this](https://pypi.org/project/durations-nlp/). | No | 15 minutes | How long to sleep after encountering an error before trying again. |
-| `SYNC_INTERVAL` | Something parseable by [this](https://pypi.org/project/durations-nlp/). | No | 1 hour | Time duration between calendar syncs. |
-| `SNAPSHOTS_FILTER` | Python regular expression | No | | Syncs only those snapshots whose dataset matches this regular expression. Leave empty to sync all. |
-| `SCRUBS_FILTER` | Python regular expression | No | | Syncs only those scrubs whose pool name matches this regular expression. Leave empty to sync all. |
-| `CLOUDSYNCS_FILTER` | Python regular expression | No | | Syncs only those cloud sync tasks whose description matches this regular expression. Leave empty to sync all. |
-| `CRONJOBS_FILTER` | Python regular expression | No | | Syncs only those cronjobs whose description matches this regular expression. Leave empty to sync all. |
+| `SNAPSHOTS_FILTER` | Python regular expression | No | | Exports only those snapshots whose dataset matches this regular expression. Leave empty to export all. |
+| `SCRUBS_FILTER` | Python regular expression | No | | Exports only those scrubs whose pool name matches this regular expression. Leave empty to export all. |
+| `CLOUDSYNCS_FILTER` | Python regular expression | No | | Exports only those cloud sync tasks whose description matches this regular expression. Leave empty to export all. |
+| `CRONJOBS_FILTER` | Python regular expression | No | | Exports only those cronjobs whose description matches this regular expression. Leave empty to export all. |
 
 ## TODO
 
 -   Fix the TODO in `cron_to_ical.py`.
--   Subscribe to changes to the 4 event types and react only when something interesting happens. This will help reduce the time that the calendar is out of sync.
 
 ## Development
 
