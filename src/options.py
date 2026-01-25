@@ -2,12 +2,9 @@ from dataclasses import dataclass
 import os
 import re
 from typing import Optional
-from durations_nlp import Duration
 
-CALENDAR_ID_ENV = "CALENDAR_ID"
-CALDAV_HOST_ENV = "CALDAV_HOST"
-CALDAV_USERNAME_ENV = "CALDAV_USERNAME"
-CALDAV_PASSWORD_ENV = "CALDAV_PASSWORD"
+CALENDAR_NAME_ENV = "CALENDAR_NAME"
+HTTP_PORT_ENV = "HTTP_PORT"
 
 TRUENAS_HOST_ENV = "TRUENAS_HOST"
 TRUENAS_HOST_VERIFY_SSL_ENV = "TRUENAS_HOST_VERIFY_SSL"
@@ -23,8 +20,8 @@ SCRUBS_REGEX_ENV = "SCRUBS_FILTER"
 CLOUDSYNCS_REGEX_ENV = "CLOUDSYNCS_FILTER"
 CRONJOBS_REGEX_ENV = "CRONJOBS_FILTER"
 
-FAILURE_BACKOFF_TIME_ENV = "FAILURE_BACKOFF_TIME"
-SYNC_INTERVAL_ENV = "SYNC_INTERVAL"
+# Regex for validating calendar name - only allow alphanumeric, hyphens, and underscores
+CALENDAR_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_-]+$')
 
 
 def parse_string(env: str, required: bool, default_value=""):
@@ -52,6 +49,17 @@ def parse_bool(env: str, required: bool, default_value=False):
     raise Exception(f"Unrecognized bool value {result}")
 
 
+def parse_int(env: str, required: bool, default_value=0):
+    result = parse_string(env, required, str(default_value))
+    if result == str(default_value):
+        return default_value
+    
+    try:
+        return int(result)
+    except ValueError:
+        raise Exception(f"Invalid integer value for {env}: {result}")
+
+
 def compile_regex(env: str) -> Optional[re.Pattern]:
     pattern = os.environ.get(env, "")
     if pattern == "":
@@ -62,10 +70,8 @@ def compile_regex(env: str) -> Optional[re.Pattern]:
 
 @dataclass
 class Options:
-    calendar_id: str
-    caldav_host: str
-    caldav_username: str
-    caldav_password: str
+    calendar_name: str
+    http_port: int
 
     truenas_host: str
     truenas_host_verify_ssl: bool
@@ -81,15 +87,18 @@ class Options:
     cloudsyncs_filter: Optional[re.Pattern]
     cronjobs_filter: Optional[re.Pattern]
 
-    failure_backoff_time: Duration
-    sync_interval: Duration
-
     @staticmethod
     def from_env():
-        calendar_id = parse_string(CALENDAR_ID_ENV, True)
-        caldav_host = parse_string(CALDAV_HOST_ENV, True)
-        caldav_username = parse_string(CALDAV_USERNAME_ENV, True)
-        caldav_password = parse_string(CALDAV_PASSWORD_ENV, True)
+        calendar_name = parse_string(CALENDAR_NAME_ENV, True)
+        
+        # Validate calendar name for security
+        if not CALENDAR_NAME_PATTERN.match(calendar_name):
+            raise Exception(
+                f"Invalid CALENDAR_NAME '{calendar_name}'. "
+                f"Only alphanumeric characters, hyphens, and underscores are allowed."
+            )
+        
+        http_port = parse_int(HTTP_PORT_ENV, False, 8080)
 
         truenas_host = parse_string(TRUENAS_HOST_ENV, True)
         truenas_host_verify_ssl = parse_bool(TRUENAS_HOST_VERIFY_SSL_ENV, False, True)
@@ -105,13 +114,8 @@ class Options:
         cloudsyncs_filter = compile_regex(CLOUDSYNCS_REGEX_ENV)
         cronjobs_filter = compile_regex(CRONJOBS_REGEX_ENV)
 
-        failure_backoff_time = Duration(parse_string(FAILURE_BACKOFF_TIME_ENV, False, "15 minutes"))
-        sync_interval = Duration(parse_string(SYNC_INTERVAL_ENV, False, "1 hour"))
-
-        return Options(calendar_id,
-                       caldav_host,
-                       caldav_username,
-                       caldav_password,
+        return Options(calendar_name,
+                       http_port,
 
                        truenas_host,
                        truenas_host_verify_ssl,
@@ -125,7 +129,4 @@ class Options:
                        snapshots_filter,
                        scrubs_filter,
                        cloudsyncs_filter,
-                       cronjobs_filter,
-
-                       failure_backoff_time,
-                       sync_interval)
+                       cronjobs_filter)
