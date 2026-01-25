@@ -20,6 +20,9 @@ SCRUBS_REGEX_ENV = "SCRUBS_FILTER"
 CLOUDSYNCS_REGEX_ENV = "CLOUDSYNCS_FILTER"
 CRONJOBS_REGEX_ENV = "CRONJOBS_FILTER"
 
+# Regex for validating calendar name - only allow alphanumeric, hyphens, and underscores
+CALENDAR_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_-]+$')
+
 
 def parse_string(env: str, required: bool, default_value=""):
     result = os.environ.get(env, "")
@@ -47,8 +50,8 @@ def parse_bool(env: str, required: bool, default_value=False):
 
 
 def parse_int(env: str, required: bool, default_value=0):
-    result = parse_string(env, required)
-    if result == "":
+    result = parse_string(env, required, str(default_value))
+    if result == str(default_value):
         return default_value
     
     try:
@@ -87,6 +90,14 @@ class Options:
     @staticmethod
     def from_env():
         calendar_name = parse_string(CALENDAR_NAME_ENV, True)
+        
+        # Validate calendar name for security
+        if not CALENDAR_NAME_PATTERN.match(calendar_name):
+            raise Exception(
+                f"Invalid CALENDAR_NAME '{calendar_name}'. "
+                f"Only alphanumeric characters, hyphens, and underscores are allowed."
+            )
+        
         http_port = parse_int(HTTP_PORT_ENV, False, 8080)
 
         truenas_host = parse_string(TRUENAS_HOST_ENV, True)

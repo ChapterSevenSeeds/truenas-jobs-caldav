@@ -100,3 +100,62 @@ def test_calendar_endpoint_exception_handling(mock_client):
     
     assert response.status_code == 500
     assert 'error' in response.json
+
+
+def test_invalid_calendar_name_validation():
+    """Test that invalid calendar names are rejected during options parsing."""
+    import os
+    from options import Options
+    
+    # Save original env vars
+    original_calendar_name = os.environ.get('CALENDAR_NAME')
+    original_truenas_host = os.environ.get('TRUENAS_HOST')
+    original_api_key = os.environ.get('TRUENAS_API_KEY')
+    
+    try:
+        # Set required env vars
+        os.environ['TRUENAS_HOST'] = 'test.local'
+        os.environ['TRUENAS_API_KEY'] = 'test-key'
+        
+        # Test invalid calendar names
+        invalid_names = [
+            '../etc/passwd',  # Path traversal
+            'calendar/../../secret',  # Path traversal with subdirectories
+            'calendar name',  # Spaces
+            'calendar@name',  # Special characters
+            'calendar.name',  # Dots
+            '',  # Empty string
+        ]
+        
+        for invalid_name in invalid_names:
+            os.environ['CALENDAR_NAME'] = invalid_name
+            try:
+                Options.from_env()
+                assert False, f"Should have rejected invalid calendar name: {invalid_name}"
+            except Exception as e:
+                # Expected to fail
+                assert 'Invalid CALENDAR_NAME' in str(e) or 'required' in str(e).lower()
+        
+        # Test valid calendar names
+        valid_names = ['calendar', 'my-calendar', 'calendar_123', 'TrueNAS-Jobs']
+        for valid_name in valid_names:
+            os.environ['CALENDAR_NAME'] = valid_name
+            options = Options.from_env()
+            assert options.calendar_name == valid_name
+    
+    finally:
+        # Restore original env vars
+        if original_calendar_name:
+            os.environ['CALENDAR_NAME'] = original_calendar_name
+        elif 'CALENDAR_NAME' in os.environ:
+            del os.environ['CALENDAR_NAME']
+        
+        if original_truenas_host:
+            os.environ['TRUENAS_HOST'] = original_truenas_host
+        elif 'TRUENAS_HOST' in os.environ:
+            del os.environ['TRUENAS_HOST']
+        
+        if original_api_key:
+            os.environ['TRUENAS_API_KEY'] = original_api_key
+        elif 'TRUENAS_API_KEY' in os.environ:
+            del os.environ['TRUENAS_API_KEY']
