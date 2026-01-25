@@ -24,32 +24,67 @@ docker run -d \
 -e TRUENAS_API_KEY=my_api_key \
 -v /etc/localtime:/etc/localtime:ro \
 -p 8080:8080 \
-chaptersevenseeds/truenas-jobs-caldav-sync
+chaptersevenseeds/truenas-jobs-ical
 ```
 
 ### Docker Compose
 
 If you want to use Docker Compose:
 
-```yaml
-# compose.yaml
+1. Create a `compose.yaml` with your settings (example below).
+2. Start the service:
 
+```sh
+docker compose up -d
+```
+
+3. Fetch your calendar:
+
+```sh
+curl http://localhost:8080/truenas-jobs -o calendar.ics
+```
+
+Example `compose.yaml`:
+
+```yaml
 services:
     truenas-jobs-http:
         restart: unless-stopped
-        image: chaptersevenseeds/truenas-jobs-caldav-sync
-        volumes:
-            # We need this so that the times for all iCal events are correct (assuming the machine running this script will have the same timezone as your TrueNAS machine).
-            - /etc/localtime:/etc/localtime:ro
+        image: chaptersevenseeds/truenas-jobs-ical
         ports:
-            - 8080:8080
+            - "8080:8080"
+        volumes:
+            # Mount the local timezone so that event times are correct
+            - /etc/localtime:/etc/localtime:ro
         environment:
+            # Required: Calendar name (becomes the URL path)
             - CALENDAR_NAME=truenas-jobs
+
+            # Optional: HTTP server port (default: 8080)
             - HTTP_PORT=8080
-            - TRUENAS_HOST=my_truenas:9001
+
+            # Required: TrueNAS connection details
+            - TRUENAS_HOST=truenas.local:443
             - TRUENAS_HOST_VERIFY_SSL=false
-            - TRUENAS_API_KEY=my_api_key
+            - TRUENAS_API_KEY=your_api_key_here
+
+            # Optional: Control which job types to include (default: all true)
+            - INCLUDE_SNAPSHOTS=true
+            - INCLUDE_SCRUBS=true
+            - INCLUDE_CLOUDSYNCS=true
+            - INCLUDE_CRONJOBS=true
+
+            # Optional: Filter jobs by regex pattern (leave empty for all)
+            # - SNAPSHOTS_FILTER=^tank/
+            # - SCRUBS_FILTER=^tank$
+            # - CLOUDSYNCS_FILTER=backup
+            # - CRONJOBS_FILTER=cleanup
 ```
+
+Notes:
+
+- The calendar is generated on-demand for each request.
+- The `/etc/localtime` bind mount keeps event times aligned with your local timezone.
 
 ## Usage
 

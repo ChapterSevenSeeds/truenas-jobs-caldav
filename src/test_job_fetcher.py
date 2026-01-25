@@ -142,7 +142,7 @@ def test_create_ical_event():
         }
     }
     
-    event = create_ical_event(item, "Snapshot", "dataset")
+    event = create_ical_event(item, "Snapshot", "dataset", iana_timezone=None)
     
     # Verify event properties
     assert event['uid'] == "truenas-snapshot-1"

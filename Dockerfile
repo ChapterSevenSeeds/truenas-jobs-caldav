@@ -16,6 +16,7 @@ COPY requirements.txt requirements.txt
 RUN python3 -m venv .venv
 RUN /truenas-jobs-caldav/.venv/bin/pip install -r requirements.txt
 
-EXPOSE 8080
+HEALTHCHECK --interval=1m --timeout=3s --retries=3 --start-period=10s \
+	CMD ["/truenas-jobs-caldav/.venv/bin/python", "-c", "import os, urllib.request; port=os.getenv('HTTP_PORT','8080'); urllib.request.urlopen(f'http://127.0.0.1:{port}/health', timeout=2).read()"]
 
 ENTRYPOINT [ "/truenas-jobs-caldav/.venv/bin/python", "main.py" ]

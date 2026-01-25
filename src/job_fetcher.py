@@ -3,8 +3,7 @@ import logging
 from typing import Dict, Optional, List
 from truenas_api_client import JSONRPCClient, LegacyClient
 from icalendar import Calendar, Event as ICalEvent
-from datetime import datetime
-from common import ITEM_TYPE_CLOUDSYNC, ITEM_TYPE_CRONJOB, ITEM_TYPE_SCRUB, ITEM_TYPE_SNAPSHOT, create_item_uid, schedule_to_cron_string
+from common import ITEM_TYPE_CLOUDSYNC, ITEM_TYPE_CRONJOB, ITEM_TYPE_SCRUB, ITEM_TYPE_SNAPSHOT, create_item_uid, resolve_local_iana_timezone, schedule_to_cron_string
 from cron_to_ical import FREQ_HOURLY, FREQ_MINUTELY, cron_to_ical
 from options import Options
 
@@ -21,7 +20,7 @@ def fetch_and_filter_items(
 ) -> List[Dict]:
     """
     Fetches TrueNAS items and filters them based on the provided regex pattern.
-    
+
     :param items_filter: A regular expression pattern to filter items.
     :param truenas_client: The TrueNAS API client to use for fetching item data.
     :param query: The query to use for fetching items from the TrueNAS API.
@@ -54,10 +53,15 @@ def fetch_and_filter_items(
     return enabled_items
 
 
-def create_ical_event(item: Dict, item_type: str, item_description_key: str) -> ICalEvent:
+def create_ical_event(
+    item: Dict,
+    item_type: str,
+    item_description_key: str,
+    iana_timezone: str | None,
+) -> ICalEvent:
     """
     Creates an iCal event from a TrueNAS item.
-    
+
     :param item: The TrueNAS item data.
     :param item_type: The type of the item.
     :param item_description_key: The key for the item description.
@@ -69,7 +73,7 @@ def create_ical_event(item: Dict, item_type: str, item_description_key: str) -> 
     cron_str = schedule_to_cron_string(item["schedule"])
     logger.info(f"Found CRON expression {cron_str}.")
 
-    ical = cron_to_ical(cron_str)
+    ical = cron_to_ical(cron_str, iana_timezone=iana_timezone)
     logger.info(f"Resulting ICAL object: {ical}")
 
     if ical.rrule["FREQ"] in (FREQ_HOURLY, FREQ_MINUTELY):
@@ -84,14 +88,14 @@ def create_ical_event(item: Dict, item_type: str, item_description_key: str) -> 
     event.add('dtstart', ical.start)
     event.add('dtend', ical.end)
     event.add('rrule', ical.rrule)
-    
+
     return event
 
 
 def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClient) -> Calendar:
     """
     Fetches all TrueNAS jobs and converts them to an iCalendar object.
-    
+
     :param options: The parsed options for the application.
     :param truenas_client: The TrueNAS client to use for fetching job data.
     :return: An iCalendar Calendar object containing all job events.
@@ -103,11 +107,12 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
     cal.add('prodid', '-//TrueNAS Jobs Calendar//EN')
     cal.add('version', '2.0')
     cal.add('x-wr-calname', f'TrueNAS Jobs - {options.calendar_name}')
-    cal.add('x-wr-timezone', 'UTC')
+    iana_timezone = resolve_local_iana_timezone()
+    cal.add('x-wr-timezone', iana_timezone or 'UTC')
 
     # Fetch and create events for each job type
     job_configs = []
-    
+
     if options.include_snapshots:
         logger.info("Including snapshots...")
         job_configs.append({
@@ -158,9 +163,9 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             config['item_type'],
             config['description_key']
         )
-        
+
         for item in items:
-            event = create_ical_event(item, config['item_type'], config['description_key'])
+            event = create_ical_event(item, config['item_type'], config['description_key'], iana_timezone)
             cal.add_component(event)
 
     logger.info(f"Calendar created with {len(cal.subcomponents)} events.")
