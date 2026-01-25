@@ -1,1 +1,0 @@
-htpasswd -cb config/users user changeme
