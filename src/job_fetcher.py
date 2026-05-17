@@ -16,7 +16,7 @@ def fetch_and_filter_items(
     query: str,
     enabled_key: str | None,
     item_type: str,
-    item_description_key: str
+    item_description_key: str,
 ) -> List[Dict]:
     """
     Fetches TrueNAS items and filters them based on the provided regex pattern.
@@ -57,6 +57,7 @@ def create_ical_event(
     item: Dict,
     item_type: str,
     item_description_key: str,
+    item_summary_prefix: str,
     iana_timezone: str | None,
 ) -> ICalEvent:
     """
@@ -65,9 +66,11 @@ def create_ical_event(
     :param item: The TrueNAS item data.
     :param item_type: The type of the item.
     :param item_description_key: The key for the item description.
+    :param item_summary_prefix: The prefix for the item summary.
+    :param iana_timezone: The IANA timezone for the event.
     :return: An iCalendar Event object.
     """
-    item_summary = f"{item_type}: {item[item_description_key]}"
+    item_summary = f"{item_summary_prefix}{item[item_description_key]}"
     logger.info(f"Creating event for item: \"{item_summary}\".")
 
     cron_str = schedule_to_cron_string(item["schedule"])
@@ -120,7 +123,8 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'query': "pool.snapshottask.query",
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_SNAPSHOT,
-            'description_key': "dataset"
+            'description_key': "dataset",
+            'item_summary_prefix': options.snapshots_prefix
         })
 
     if options.include_scrubs:
@@ -130,7 +134,8 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'query': "pool.scrub.query",
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_SCRUB,
-            'description_key': "pool_name"
+            'description_key': "pool_name",
+            'item_summary_prefix': options.scrubs_prefix
         })
 
     if options.include_cloudsyncs:
@@ -140,7 +145,8 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'query': "cloudsync.query",
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_CLOUDSYNC,
-            'description_key': "description"
+            'description_key': "description",
+            'item_summary_prefix': options.cloudsyncs_prefix
         })
 
     if options.include_cronjobs:
@@ -150,7 +156,8 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'query': "cronjob.query",
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_CRONJOB,
-            'description_key': "description"
+            'description_key': "description",
+            'item_summary_prefix': options.cronjobs_prefix
         })
 
     # Fetch items and create events
@@ -161,11 +168,11 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             config['query'],
             config['enabled_key'],
             config['item_type'],
-            config['description_key']
+            config['description_key'],
         )
 
         for item in items:
-            event = create_ical_event(item, config['item_type'], config['description_key'], iana_timezone)
+            event = create_ical_event(item, config['item_type'], config['description_key'], config['item_summary_prefix'], iana_timezone)
             cal.add_component(event)
 
     logger.info(f"Calendar created with {len(cal.subcomponents)} events.")

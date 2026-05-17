@@ -13,7 +13,7 @@ import re
 def create_mock_truenas_client():
     """Create a mock TrueNAS client."""
     mock_client = MagicMock()
-    
+
     # Mock snapshot data
     mock_client.call = Mock(side_effect=lambda query: {
         "pool.snapshottask.query": [
@@ -85,14 +85,14 @@ def create_mock_truenas_client():
             }
         ]
     }.get(query, []))
-    
+
     return mock_client
 
 
 def test_fetch_and_filter_items_enabled_only():
     """Test that only enabled items are returned."""
     mock_client = create_mock_truenas_client()
-    
+
     items = fetch_and_filter_items(
         items_filter=None,
         truenas_client=mock_client,
@@ -101,7 +101,7 @@ def test_fetch_and_filter_items_enabled_only():
         item_type="Snapshot",
         item_description_key="dataset"
     )
-    
+
     # Should only return the enabled snapshot (id=1)
     assert len(items) == 1
     assert items[0]["id"] == 1
@@ -111,7 +111,7 @@ def test_fetch_and_filter_items_enabled_only():
 def test_fetch_and_filter_items_with_regex():
     """Test filtering items with a regex pattern."""
     mock_client = create_mock_truenas_client()
-    
+
     # Filter for datasets containing "data"
     pattern = re.compile("data")
     items = fetch_and_filter_items(
@@ -122,7 +122,7 @@ def test_fetch_and_filter_items_with_regex():
         item_type="Snapshot",
         item_description_key="dataset"
     )
-    
+
     # Should only return the "tank/data" snapshot
     assert len(items) == 1
     assert items[0]["dataset"] == "tank/data"
@@ -141,9 +141,9 @@ def test_create_ical_event():
             "dow": "*"
         }
     }
-    
-    event = create_ical_event(item, "Snapshot", "dataset", iana_timezone=None)
-    
+
+    event = create_ical_event(item, "Snapshot", "dataset", "Snapshot: ", iana_timezone=None)
+
     # Verify event properties
     assert event['uid'] == "truenas-snapshot-1"
     assert event['summary'] == "Snapshot: tank/data"
@@ -156,7 +156,7 @@ def test_create_ical_event():
 def test_fetch_all_jobs():
     """Test fetching all jobs and creating a complete calendar."""
     mock_client = create_mock_truenas_client()
-    
+
     options = Options(
         calendar_name="test-calendar",
         http_port=8080,
@@ -170,21 +170,25 @@ def test_fetch_all_jobs():
         snapshots_filter=None,
         scrubs_filter=None,
         cloudsyncs_filter=None,
-        cronjobs_filter=None
+        cronjobs_filter=None,
+        snapshots_prefix="Snapshot: ",
+        scrubs_prefix="Scrub: ",
+        cloudsyncs_prefix="CloudSync: ",
+        cronjobs_prefix="CronJob: "
     )
-    
+
     cal = fetch_all_jobs(options, mock_client)
-    
+
     # Verify calendar type and properties
     assert isinstance(cal, Calendar)
     assert cal['prodid'] == '-//TrueNAS Jobs Calendar//EN'
     assert cal['version'] == '2.0'
-    
+
     # Should have 4 events (1 snapshot, 1 scrub, 1 cloudsync, 1 cronjob)
     # The disabled snapshot should not be included
     events = [comp for comp in cal.subcomponents if comp.name == 'VEVENT']
     assert len(events) == 4
-    
+
     # Verify event summaries
     summaries = [str(event['summary']) for event in events]
     assert "Snapshot: tank/data" in summaries
@@ -196,7 +200,7 @@ def test_fetch_all_jobs():
 def test_fetch_all_jobs_selective_inclusion():
     """Test that job types can be selectively included."""
     mock_client = create_mock_truenas_client()
-    
+
     options = Options(
         calendar_name="test-calendar",
         http_port=8080,
@@ -210,11 +214,83 @@ def test_fetch_all_jobs_selective_inclusion():
         snapshots_filter=None,
         scrubs_filter=None,
         cloudsyncs_filter=None,
-        cronjobs_filter=None
+        cronjobs_filter=None,
+        snapshots_prefix="Snapshot?",
+        scrubs_prefix="",
+        cloudsyncs_prefix="",
+        cronjobs_prefix=""
     )
-    
+
     cal = fetch_all_jobs(options, mock_client)
-    
+
+    # Should only have 1 event (snapshot)
+    events = [comp for comp in cal.subcomponents if comp.name == 'VEVENT']
+    assert len(events) == 1
+    assert str(events[0]['summary']) == "Snapshot?tank/data"
+
+
+def test_empty_summary_prefix(monkeypatch: pytest.MonkeyPatch):
+    """Test that empty summary prefixes are handled correctly."""
+    mock_client = create_mock_truenas_client()
+
+    monkeypatch.setenv('CALENDAR_NAME', "test-calendar")
+    monkeypatch.setenv('HTTP_PORT', '8080')
+    monkeypatch.setenv('TRUENAS_HOST', "test.local")
+    monkeypatch.setenv('TRUENAS_HOST_VERIFY_SSL', 'false')
+    monkeypatch.setenv('TRUENAS_API_KEY', "test-key")
+    monkeypatch.setenv('INCLUDE_SNAPSHOTS', 'true')
+    monkeypatch.setenv('INCLUDE_SCRUBS', 'false')
+    monkeypatch.setenv('INCLUDE_CLOUDSYNCS', 'false')
+    monkeypatch.setenv('INCLUDE_CRONJOBS', 'false')
+    monkeypatch.setenv('SNAPSHOTS_FILTER', '')
+    monkeypatch.setenv('SCRUBS_FILTER', '')
+    monkeypatch.setenv('CLOUDSYNCS_FILTER', '')
+    monkeypatch.setenv('CRONJOBS_FILTER', '')
+
+    # Set prefixes to empty strings
+    monkeypatch.setenv('SNAPSHOTS_SUMMARY_PREFIX', "")
+    monkeypatch.setenv('SCRUBS_SUMMARY_PREFIX', "")
+    monkeypatch.setenv('CLOUDSYNCS_SUMMARY_PREFIX', "")
+    monkeypatch.setenv('CRONJOBS_SUMMARY_PREFIX', "")
+
+    options = Options.from_env()
+
+    cal = fetch_all_jobs(options, mock_client)
+
+    # Should only have 1 event (snapshot)
+    events = [comp for comp in cal.subcomponents if comp.name == 'VEVENT']
+    assert len(events) == 1
+    assert str(events[0]['summary']) == "tank/data"
+
+
+def test_default_summary_prefix(monkeypatch: pytest.MonkeyPatch):
+    """Test that default summary prefixes are used when not specified."""
+    mock_client = create_mock_truenas_client()
+
+    monkeypatch.setenv('CALENDAR_NAME', "test-calendar")
+    monkeypatch.setenv('HTTP_PORT', '8080')
+    monkeypatch.setenv('TRUENAS_HOST', "test.local")
+    monkeypatch.setenv('TRUENAS_HOST_VERIFY_SSL', 'false')
+    monkeypatch.setenv('TRUENAS_API_KEY', "test-key")
+    monkeypatch.setenv('INCLUDE_SNAPSHOTS', 'true')
+    monkeypatch.setenv('INCLUDE_SCRUBS', 'false')
+    monkeypatch.setenv('INCLUDE_CLOUDSYNCS', 'false')
+    monkeypatch.setenv('INCLUDE_CRONJOBS', 'false')
+    monkeypatch.setenv('SNAPSHOTS_FILTER', '')
+    monkeypatch.setenv('SCRUBS_FILTER', '')
+    monkeypatch.setenv('CLOUDSYNCS_FILTER', '')
+    monkeypatch.setenv('CRONJOBS_FILTER', '')
+
+    monkeypatch.delenv('SNAPSHOTS_SUMMARY_PREFIX', raising=False)
+    monkeypatch.delenv('SCRUBS_SUMMARY_PREFIX', raising=False)
+    monkeypatch.delenv('CLOUDSYNCS_SUMMARY_PREFIX', raising=False)
+    monkeypatch.delenv('CRONJOBS_SUMMARY_PREFIX', raising=False)
+    # Summary prefixes are not specified so that the defaults will be used.
+
+    options = Options.from_env()
+
+    cal = fetch_all_jobs(options, mock_client)
+
     # Should only have 1 event (snapshot)
     events = [comp for comp in cal.subcomponents if comp.name == 'VEVENT']
     assert len(events) == 1
@@ -224,7 +300,7 @@ def test_fetch_all_jobs_selective_inclusion():
 def test_ical_output_validity():
     """Test that the generated iCalendar output is valid."""
     mock_client = create_mock_truenas_client()
-    
+
     options = Options(
         calendar_name="test-calendar",
         http_port=8080,
@@ -238,24 +314,28 @@ def test_ical_output_validity():
         snapshots_filter=None,
         scrubs_filter=None,
         cloudsyncs_filter=None,
-        cronjobs_filter=None
+        cronjobs_filter=None,
+        snapshots_prefix="",
+        scrubs_prefix="",
+        cloudsyncs_prefix="",
+        cronjobs_prefix=""
     )
-    
+
     cal = fetch_all_jobs(options, mock_client)
-    
+
     # Convert to iCalendar string
     ical_string = cal.to_ical().decode('utf-8')
-    
+
     # Verify basic iCalendar structure
     assert 'BEGIN:VCALENDAR' in ical_string
     assert 'END:VCALENDAR' in ical_string
     assert 'VERSION:2.0' in ical_string
     assert 'PRODID:-//TrueNAS Jobs Calendar//EN' in ical_string
-    
+
     # Should have VEVENT blocks for each job
     assert ical_string.count('BEGIN:VEVENT') == 4
     assert ical_string.count('END:VEVENT') == 4
-    
+
     # Verify event UIDs are present
     assert 'truenas-snapshot-1' in ical_string
     assert 'truenas-scrub-3' in ical_string
