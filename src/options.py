@@ -124,10 +124,10 @@ class Options:
         cloudsyncs_filter = compile_regex(CLOUDSYNCS_REGEX_ENV)
         cronjobs_filter = compile_regex(CRONJOBS_REGEX_ENV)
 
-        snapshots_suffix = parse_string(SNAPSHOTS_SUMMARY_PREFIX_ENV, False, "Snapshot: ")
-        scrubs_suffix = parse_string(SCRUBS_SUMMARY_PREFIX_ENV, False, "Scrub: ")
-        cloudsyncs_suffix = parse_string(CLOUDSYNCS_SUMMARY_PREFIX_ENV, False, "CloudSync: ")
-        cronjobs_suffix = parse_string(CRONJOBS_SUMMARY_PREFIX_ENV, False, "CronJob: ")
+        snapshots_prefix = parse_string(SNAPSHOTS_SUMMARY_PREFIX_ENV, False, "Snapshot: ")
+        scrubs_prefix = parse_string(SCRUBS_SUMMARY_PREFIX_ENV, False, "Scrub: ")
+        cloudsyncs_prefix = parse_string(CLOUDSYNCS_SUMMARY_PREFIX_ENV, False, "CloudSync: ")
+        cronjobs_prefix = parse_string(CRONJOBS_SUMMARY_PREFIX_ENV, False, "CronJob: ")
 
         return Options(calendar_name,
                        http_port,
@@ -146,7 +146,7 @@ class Options:
                        cloudsyncs_filter,
                        cronjobs_filter,
 
-                       snapshots_suffix,
-                       scrubs_suffix,
-                       cloudsyncs_suffix,
-                       cronjobs_suffix)
+                       snapshots_prefix,
+                       scrubs_prefix,
+                       cloudsyncs_prefix,
+                       cronjobs_prefix)

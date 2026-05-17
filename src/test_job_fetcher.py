@@ -8,10 +8,6 @@ from job_fetcher import fetch_and_filter_items, create_ical_event, fetch_all_job
 from options import Options
 from icalendar import Calendar
 import re
-import os
-
-import options
-
 
 def create_mock_truenas_client():
     """Create a mock TrueNAS client."""
@@ -232,7 +228,7 @@ def test_fetch_all_jobs_selective_inclusion():
     assert str(events[0]['summary']) == "Snapshot?tank/data"
 
 def test_empty_summary_prefix(monkeypatch: pytest.MonkeyPatch):
-    """Test that job types can be selectively included."""
+    """Test that empty summary prefixes are handled correctly."""
     mock_client = create_mock_truenas_client()
 
     monkeypatch.setenv('CALENDAR_NAME', "test-calendar")
@@ -265,7 +261,7 @@ def test_empty_summary_prefix(monkeypatch: pytest.MonkeyPatch):
     assert str(events[0]['summary']) == "tank/data"
 
 def test_default_summary_prefix(monkeypatch: pytest.MonkeyPatch):
-    """Test that job types can be selectively included."""
+    """Test that default summary prefixes are used when not specified."""
     mock_client = create_mock_truenas_client()
 
     monkeypatch.setenv('CALENDAR_NAME', "test-calendar")
@@ -281,7 +277,12 @@ def test_default_summary_prefix(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv('SCRUBS_FILTER', '')
     monkeypatch.setenv('CLOUDSYNCS_FILTER', '')
     monkeypatch.setenv('CRONJOBS_FILTER', '')
-    # Suffixes are not specified so that the defaults will be used.
+
+    monkeypatch.delenv('SNAPSHOTS_SUMMARY_PREFIX', raising=False)
+    monkeypatch.delenv('SCRUBS_SUMMARY_PREFIX', raising=False)
+    monkeypatch.delenv('CLOUDSYNCS_SUMMARY_PREFIX', raising=False)
+    monkeypatch.delenv('CRONJOBS_SUMMARY_PREFIX', raising=False)
+     # Summary prefixes are not specified so that the defaults will be used.
 
     options = Options.from_env()
 
