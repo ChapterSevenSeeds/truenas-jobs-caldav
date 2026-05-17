@@ -20,6 +20,11 @@ SCRUBS_REGEX_ENV = "SCRUBS_FILTER"
 CLOUDSYNCS_REGEX_ENV = "CLOUDSYNCS_FILTER"
 CRONJOBS_REGEX_ENV = "CRONJOBS_FILTER"
 
+SNAPSHOTS_SUMMARY_PREFIX_ENV = "SNAPSHOTS_SUMMARY_PREFIX"
+SCRUBS_SUMMARY_PREFIX_ENV = "SCRUBS_SUMMARY_PREFIX"
+CLOUDSYNCS_SUMMARY_PREFIX_ENV = "CLOUDSYNCS_SUMMARY_PREFIX"
+CRONJOBS_SUMMARY_PREFIX_ENV = "CRONJOBS_SUMMARY_PREFIX"
+
 # Regex for validating calendar name - only allow alphanumeric, hyphens, and underscores
 CALENDAR_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_-]+$')
 
@@ -53,7 +58,7 @@ def parse_int(env: str, required: bool, default_value=0):
     result = parse_string(env, required, str(default_value))
     if result == str(default_value):
         return default_value
-    
+
     try:
         return int(result)
     except ValueError:
@@ -87,17 +92,22 @@ class Options:
     cloudsyncs_filter: Optional[re.Pattern]
     cronjobs_filter: Optional[re.Pattern]
 
+    snapshots_suffix: str
+    scrubs_suffix: str
+    cloudsyncs_suffix: str
+    cronjobs_suffix: str
+
     @staticmethod
     def from_env():
         calendar_name = parse_string(CALENDAR_NAME_ENV, True)
-        
+
         # Validate calendar name for security
         if not CALENDAR_NAME_PATTERN.match(calendar_name):
             raise Exception(
                 f"Invalid CALENDAR_NAME '{calendar_name}'. "
                 f"Only alphanumeric characters, hyphens, and underscores are allowed."
             )
-        
+
         http_port = parse_int(HTTP_PORT_ENV, False, 8080)
 
         truenas_host = parse_string(TRUENAS_HOST_ENV, True)
@@ -114,6 +124,11 @@ class Options:
         cloudsyncs_filter = compile_regex(CLOUDSYNCS_REGEX_ENV)
         cronjobs_filter = compile_regex(CRONJOBS_REGEX_ENV)
 
+        snapshots_suffix = parse_string(SNAPSHOTS_SUMMARY_PREFIX_ENV, False, "Snapshot: ")
+        scrubs_suffix = parse_string(SCRUBS_SUMMARY_PREFIX_ENV, False, "Scrub: ")
+        cloudsyncs_suffix = parse_string(CLOUDSYNCS_SUMMARY_PREFIX_ENV, False, "CloudSync: ")
+        cronjobs_suffix = parse_string(CRONJOBS_SUMMARY_PREFIX_ENV, False, "CronJob: ")
+
         return Options(calendar_name,
                        http_port,
 
@@ -129,4 +144,9 @@ class Options:
                        snapshots_filter,
                        scrubs_filter,
                        cloudsyncs_filter,
-                       cronjobs_filter)
+                       cronjobs_filter,
+
+                       snapshots_suffix,
+                       scrubs_suffix,
+                       cloudsyncs_suffix,
+                       cronjobs_suffix)
