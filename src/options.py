@@ -29,12 +29,33 @@ CRONJOBS_SUMMARY_PREFIX_ENV = "CRONJOBS_SUMMARY_PREFIX"
 CALENDAR_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_-]+$')
 
 
-def parse_string(env: str, required: bool, default_value=""):
+def parse_string(env: str, required: bool, default_value="", allow_empty=False):
     result = os.environ.get(env, None)
-    if result is None:
+    is_empty = result == ""
+    is_undefined = result is None
+
+    if is_undefined:
         if required:
             raise Exception(f"Environment variable {env} is required.")
 
+        # If undefined but not required, use the default.
+        return default_value
+
+    if is_empty:
+        # 1. Optional but can't be empty: return default
+        # 2. Optional and can be empty: return empty string
+        # 3. Required but can be empty: return empty string
+        # 4. Required and can't be empty: raise exception
+        
+        if required and not allow_empty:
+            # Case 4
+            raise Exception(f"Environment variable {env} is required and cannot be empty.")
+        
+        if allow_empty:
+            # Cases 2 and 3
+            return ""
+        
+        # Case 1
         return default_value
 
     return result
@@ -124,10 +145,10 @@ class Options:
         cloudsyncs_filter = compile_regex(CLOUDSYNCS_REGEX_ENV)
         cronjobs_filter = compile_regex(CRONJOBS_REGEX_ENV)
 
-        snapshots_prefix = parse_string(SNAPSHOTS_SUMMARY_PREFIX_ENV, False, "Snapshot: ")
-        scrubs_prefix = parse_string(SCRUBS_SUMMARY_PREFIX_ENV, False, "Scrub: ")
-        cloudsyncs_prefix = parse_string(CLOUDSYNCS_SUMMARY_PREFIX_ENV, False, "CloudSync: ")
-        cronjobs_prefix = parse_string(CRONJOBS_SUMMARY_PREFIX_ENV, False, "CronJob: ")
+        snapshots_prefix = parse_string(SNAPSHOTS_SUMMARY_PREFIX_ENV, False, "Snapshot: ", allow_empty=True)
+        scrubs_prefix = parse_string(SCRUBS_SUMMARY_PREFIX_ENV, False, "Scrub: ", allow_empty=True)
+        cloudsyncs_prefix = parse_string(CLOUDSYNCS_SUMMARY_PREFIX_ENV, False, "CloudSync: ", allow_empty=True)
+        cronjobs_prefix = parse_string(CRONJOBS_SUMMARY_PREFIX_ENV, False, "CronJob: ", allow_empty=True)
 
         return Options(calendar_name,
                        http_port,

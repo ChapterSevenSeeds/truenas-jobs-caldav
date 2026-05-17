@@ -9,6 +9,7 @@ from options import Options
 from icalendar import Calendar
 import re
 
+
 def create_mock_truenas_client():
     """Create a mock TrueNAS client."""
     mock_client = MagicMock()
@@ -227,6 +228,7 @@ def test_fetch_all_jobs_selective_inclusion():
     assert len(events) == 1
     assert str(events[0]['summary']) == "Snapshot?tank/data"
 
+
 def test_empty_summary_prefix(monkeypatch: pytest.MonkeyPatch):
     """Test that empty summary prefixes are handled correctly."""
     mock_client = create_mock_truenas_client()
@@ -260,6 +262,7 @@ def test_empty_summary_prefix(monkeypatch: pytest.MonkeyPatch):
     assert len(events) == 1
     assert str(events[0]['summary']) == "tank/data"
 
+
 def test_default_summary_prefix(monkeypatch: pytest.MonkeyPatch):
     """Test that default summary prefixes are used when not specified."""
     mock_client = create_mock_truenas_client()
@@ -282,7 +285,7 @@ def test_default_summary_prefix(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.delenv('SCRUBS_SUMMARY_PREFIX', raising=False)
     monkeypatch.delenv('CLOUDSYNCS_SUMMARY_PREFIX', raising=False)
     monkeypatch.delenv('CRONJOBS_SUMMARY_PREFIX', raising=False)
-     # Summary prefixes are not specified so that the defaults will be used.
+    # Summary prefixes are not specified so that the defaults will be used.
 
     options = Options.from_env()
 
