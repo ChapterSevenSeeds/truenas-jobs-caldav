@@ -30,8 +30,8 @@ CALENDAR_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9_-]+$')
 
 
 def parse_string(env: str, required: bool, default_value=""):
-    result = os.environ.get(env, "")
-    if result == "":
+    result = os.environ.get(env, None)
+    if result is None:
         if required:
             raise Exception(f"Environment variable {env} is required.")
 
@@ -92,10 +92,10 @@ class Options:
     cloudsyncs_filter: Optional[re.Pattern]
     cronjobs_filter: Optional[re.Pattern]
 
-    snapshots_suffix: str
-    scrubs_suffix: str
-    cloudsyncs_suffix: str
-    cronjobs_suffix: str
+    snapshots_prefix: str
+    scrubs_prefix: str
+    cloudsyncs_prefix: str
+    cronjobs_prefix: str
 
     @staticmethod
     def from_env():

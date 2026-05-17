@@ -124,7 +124,7 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_SNAPSHOT,
             'description_key': "dataset",
-            'item_summary_prefix': options.snapshots_suffix
+            'item_summary_prefix': options.snapshots_prefix
         })
 
     if options.include_scrubs:
@@ -135,7 +135,7 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_SCRUB,
             'description_key': "pool_name",
-            'item_summary_prefix': options.scrubs_suffix
+            'item_summary_prefix': options.scrubs_prefix
         })
 
     if options.include_cloudsyncs:
@@ -146,7 +146,7 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_CLOUDSYNC,
             'description_key': "description",
-            'item_summary_prefix': options.cloudsyncs_suffix
+            'item_summary_prefix': options.cloudsyncs_prefix
         })
 
     if options.include_cronjobs:
@@ -157,7 +157,7 @@ def fetch_all_jobs(options: Options, truenas_client: JSONRPCClient | LegacyClien
             'enabled_key': "enabled",
             'item_type': ITEM_TYPE_CRONJOB,
             'description_key': "description",
-            'item_summary_prefix': options.cronjobs_suffix
+            'item_summary_prefix': options.cronjobs_prefix
         })
 
     # Fetch items and create events

@@ -20,10 +20,10 @@ def create_mock_options():
         scrubs_filter=None,
         cloudsyncs_filter=None,
         cronjobs_filter=None,
-        snapshots_suffix="",
-        scrubs_suffix="",
-        cloudsyncs_suffix="",
-        cronjobs_suffix="",
+        snapshots_prefix="",
+        scrubs_prefix="",
+        cloudsyncs_prefix="",
+        cronjobs_prefix="",
     )
 
 

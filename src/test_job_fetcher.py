@@ -8,6 +8,9 @@ from job_fetcher import fetch_and_filter_items, create_ical_event, fetch_all_job
 from options import Options
 from icalendar import Calendar
 import re
+import os
+
+import options
 
 
 def create_mock_truenas_client():
@@ -171,10 +174,10 @@ def test_fetch_all_jobs():
         scrubs_filter=None,
         cloudsyncs_filter=None,
         cronjobs_filter=None,
-        snapshots_suffix="Snapshot: ",
-        scrubs_suffix="Scrub: ",
-        cloudsyncs_suffix="CloudSync: ",
-        cronjobs_suffix="CronJob: "
+        snapshots_prefix="Snapshot: ",
+        scrubs_prefix="Scrub: ",
+        cloudsyncs_prefix="CloudSync: ",
+        cronjobs_prefix="CronJob: "
     )
 
     cal = fetch_all_jobs(options, mock_client)
@@ -215,10 +218,10 @@ def test_fetch_all_jobs_selective_inclusion():
         scrubs_filter=None,
         cloudsyncs_filter=None,
         cronjobs_filter=None,
-        snapshots_suffix="Snapshot?",
-        scrubs_suffix="",
-        cloudsyncs_suffix="",
-        cronjobs_suffix=""
+        snapshots_prefix="Snapshot?",
+        scrubs_prefix="",
+        cloudsyncs_prefix="",
+        cronjobs_prefix=""
     )
 
     cal = fetch_all_jobs(options, mock_client)
@@ -227,6 +230,67 @@ def test_fetch_all_jobs_selective_inclusion():
     events = [comp for comp in cal.subcomponents if comp.name == 'VEVENT']
     assert len(events) == 1
     assert str(events[0]['summary']) == "Snapshot?tank/data"
+
+def test_empty_summary_prefix(monkeypatch: pytest.MonkeyPatch):
+    """Test that job types can be selectively included."""
+    mock_client = create_mock_truenas_client()
+
+    monkeypatch.setenv('CALENDAR_NAME', "test-calendar")
+    monkeypatch.setenv('HTTP_PORT', '8080')
+    monkeypatch.setenv('TRUENAS_HOST', "test.local")
+    monkeypatch.setenv('TRUENAS_HOST_VERIFY_SSL', 'false')
+    monkeypatch.setenv('TRUENAS_API_KEY', "test-key")
+    monkeypatch.setenv('INCLUDE_SNAPSHOTS', 'true')
+    monkeypatch.setenv('INCLUDE_SCRUBS', 'false')
+    monkeypatch.setenv('INCLUDE_CLOUDSYNCS', 'false')
+    monkeypatch.setenv('INCLUDE_CRONJOBS', 'false')
+    monkeypatch.setenv('SNAPSHOTS_FILTER', '')
+    monkeypatch.setenv('SCRUBS_FILTER', '')
+    monkeypatch.setenv('CLOUDSYNCS_FILTER', '')
+    monkeypatch.setenv('CRONJOBS_FILTER', '')
+
+    # Set prefixes to empty strings
+    monkeypatch.setenv('SNAPSHOTS_SUMMARY_PREFIX', "")
+    monkeypatch.setenv('SCRUBS_SUMMARY_PREFIX', "")
+    monkeypatch.setenv('CLOUDSYNCS_SUMMARY_PREFIX', "")
+    monkeypatch.setenv('CRONJOBS_SUMMARY_PREFIX', "")
+
+    options = Options.from_env()
+
+    cal = fetch_all_jobs(options, mock_client)
+
+    # Should only have 1 event (snapshot)
+    events = [comp for comp in cal.subcomponents if comp.name == 'VEVENT']
+    assert len(events) == 1
+    assert str(events[0]['summary']) == "tank/data"
+
+def test_default_summary_prefix(monkeypatch: pytest.MonkeyPatch):
+    """Test that job types can be selectively included."""
+    mock_client = create_mock_truenas_client()
+
+    monkeypatch.setenv('CALENDAR_NAME', "test-calendar")
+    monkeypatch.setenv('HTTP_PORT', '8080')
+    monkeypatch.setenv('TRUENAS_HOST', "test.local")
+    monkeypatch.setenv('TRUENAS_HOST_VERIFY_SSL', 'false')
+    monkeypatch.setenv('TRUENAS_API_KEY', "test-key")
+    monkeypatch.setenv('INCLUDE_SNAPSHOTS', 'true')
+    monkeypatch.setenv('INCLUDE_SCRUBS', 'false')
+    monkeypatch.setenv('INCLUDE_CLOUDSYNCS', 'false')
+    monkeypatch.setenv('INCLUDE_CRONJOBS', 'false')
+    monkeypatch.setenv('SNAPSHOTS_FILTER', '')
+    monkeypatch.setenv('SCRUBS_FILTER', '')
+    monkeypatch.setenv('CLOUDSYNCS_FILTER', '')
+    monkeypatch.setenv('CRONJOBS_FILTER', '')
+    # Suffixes are not specified so that the defaults will be used.
+
+    options = Options.from_env()
+
+    cal = fetch_all_jobs(options, mock_client)
+
+    # Should only have 1 event (snapshot)
+    events = [comp for comp in cal.subcomponents if comp.name == 'VEVENT']
+    assert len(events) == 1
+    assert str(events[0]['summary']) == "Snapshot: tank/data"
 
 
 def test_ical_output_validity():
@@ -247,10 +311,10 @@ def test_ical_output_validity():
         scrubs_filter=None,
         cloudsyncs_filter=None,
         cronjobs_filter=None,
-        snapshots_suffix="",
-        scrubs_suffix="",
-        cloudsyncs_suffix="",
-        cronjobs_suffix=""
+        snapshots_prefix="",
+        scrubs_prefix="",
+        cloudsyncs_prefix="",
+        cronjobs_prefix=""
     )
 
     cal = fetch_all_jobs(options, mock_client)
